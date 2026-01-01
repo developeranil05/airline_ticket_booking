@@ -40,17 +40,55 @@
     <div class="col-12">
         <h5>Seat Map</h5>
         <div class="mb-3">
-            <span class="badge bg-success me-2">Available</span>
-            <span class="badge bg-danger me-2">Booked</span>
-            <span class="badge bg-warning">Window</span>
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="card bg-light">
+                        <div class="card-body text-center">
+                            <h5 class="text-primary">{{ total_seats }}</h5>
+                            <small>Total Seats</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card bg-light">
+                        <div class="card-body text-center">
+                            <h5 class="text-success">{{ available_seats }}</h5>
+                            <small>Available</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card bg-light">
+                        <div class="card-body text-center">
+                            <h5 class="text-danger">{{ booked_seats }}</h5>
+                            <small>Booked</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card bg-light">
+                        <div class="card-body text-center">
+                            <h5 class="text-info">{{ held_seats }}</h5>
+                            <small>Held</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="mb-3">
+            <span class="badge bg-light text-success me-2"><i class="fas fa-check"></i> Available</span>
+            <span class="badge bg-danger me-2"><i class="fas fa-times"></i> Booked</span>
+            <span class="badge bg-warning me-2"><i class="fas fa-window-maximize"></i> Window Seat</span>
+            <span class="badge bg-info"><i class="fas fa-clock"></i> Held</span>
         </div>
         
         <div class="seat-map">
             <style>
                 .seat {
-                    width: 40px;
-                    height: 40px;
-                    margin: 2px;
+                    width: 50px;
+                    height: 50px;
+                    margin: 3px;
                     border: 2px solid #ddd;
                     border-radius: 8px;
                     display: inline-flex;
@@ -61,13 +99,61 @@
                     cursor: pointer;
                     text-decoration: none;
                     color: #333;
+                    transition: all 0.2s ease;
+                    position: relative;
                 }
-                .seat.available { background-color: #d4edda; border-color: #28a745; }
-                .seat.booked { background-color: #f8d7da; border-color: #dc3545; cursor: not-allowed; }
-                .seat.window { border-color: #ffc107; }
-                .seat:hover.available { background-color: #c3e6cb; }
-                .row-label { width: 30px; text-align: center; font-weight: bold; }
-                .aisle { width: 20px; }
+                .seat.available { 
+                    background-color: #90EE90; 
+                    border-color: #32CD32;
+                    color: #006400;
+                }
+                .seat.booked { 
+                    background-color: #dc3545; 
+                    border-color: #c82333; 
+                    cursor: not-allowed;
+                    color: white;
+                }
+                .seat.held {
+                    background-color: #17a2b8;
+                    border-color: #138496;
+                    color: white;
+                    cursor: not-allowed;
+                }
+                .seat.window::before {
+                    content: '🪟';
+                    position: absolute;
+                    top: -8px;
+                    right: -8px;
+                    font-size: 16px;
+                    background: #ffc107;
+                    border-radius: 50%;
+                    width: 20px;
+                    height: 20px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    border: 2px solid white;
+                }
+                .seat:hover.available { 
+                    background-color: #7FDD7F;
+                    transform: translateY(-2px);
+                    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+                }
+                .row-label { 
+                    width: 40px; 
+                    text-align: center; 
+                    font-weight: bold;
+                    color: #495057;
+                    font-size: 16px;
+                }
+                .aisle { width: 30px; }
+                .seat-map {
+                    background-color: #f8f9fa;
+                    padding: 25px;
+                    border-radius: 15px;
+                    border: 1px solid #dee2e6;
+                    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+                }
             </style>
             
             {% regroup seats by row_number as seat_rows %}
@@ -80,10 +166,14 @@
                         <div class="seat booked {% if seat.is_window %}window{% endif %}" title="Seat {{ seat.seat_number }} - Booked">
                             {{ seat.seat_letter }}
                         </div>
+                    {% elif seat.is_held %}
+                        <div class="seat held {% if seat.is_window %}window{% endif %}" title="Seat {{ seat.seat_number }} - Temporarily Held">
+                            {{ seat.seat_letter }}
+                        </div>
                     {% else %}
                         <a href="{% url 'book-seat-gui' seat.id %}" 
                            class="seat available {% if seat.is_window %}window{% endif %}" 
-                           title="Seat {{ seat.seat_number }} - ${{ flight.price }}">
+                           title="Seat {{ seat.seat_number }} - Available - ${{ flight.price }}">
                             {{ seat.seat_letter }}
                         </a>
                     {% endif %}

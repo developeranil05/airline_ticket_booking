@@ -39,7 +39,11 @@
                     </div>
                     <div class="col-md-6">
                         <h6>Booking Information</h6>
+                        {% if booking.state == 'CONFIRMED' %}
                         <p><strong>Reference:</strong> {{ booking.booking_reference }}</p>
+                        {% else %}
+                        <p><strong>Status:</strong> Seat Reserved (Payment Pending)</p>
+                        {% endif %}
                         <p><strong>Seat:</strong> {{ booking.seat.seat_number }} ({{ booking.seat.seat_class }})</p>
                         <p><strong>Passenger:</strong> {{ booking.passenger_name }}</p>
                         <p><strong>Email:</strong> {{ booking.passenger_email }}</p>
@@ -81,20 +85,56 @@
             </div>
             <div class="card-body">
                 {% if booking.state == 'SEAT_HELD' %}
-                    <a href="{% url 'process-payment-gui' booking.id %}" class="btn btn-success w-100 mb-2">
+                    <a href="{% url 'payment-page-gui' booking.id %}" class="btn btn-success w-100 mb-2">
                         <i class="fas fa-credit-card"></i> Pay Now
                     </a>
                     <div class="alert alert-warning">
-                        <small><i class="fas fa-clock"></i> Complete payment before {{ booking.seat_hold_until|date:"H:i" }}</small>
+                        <small><i class="fas fa-clock"></i> Time remaining: <span id="countdown" class="fw-bold text-danger">Loading...</span></small>
                     </div>
+                    
+                    <script>
+                    // Countdown timer
+                    const holdUntil = new Date('{{ booking.seat_hold_until|date:"c" }}').getTime();
+                    
+                    function updateCountdown() {
+                        const now = new Date().getTime();
+                        const timeLeft = holdUntil - now;
+                        
+                        if (timeLeft > 0) {
+                            const minutes = Math.floor(timeLeft / (1000 * 60));
+                            const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
+                            
+                            document.getElementById('countdown').innerHTML = 
+                                minutes + 'm ' + seconds + 's';
+                        } else {
+                            document.getElementById('countdown').innerHTML = 'EXPIRED';
+                            document.getElementById('countdown').className = 'fw-bold text-danger';
+                            // Optionally reload page or disable pay button
+                            setTimeout(() => location.reload(), 2000);
+                        }
+                    }
+                    
+                    // Update every second
+                    updateCountdown();
+                    setInterval(updateCountdown, 1000);
+                    </script>
                 {% elif booking.state == 'CONFIRMED' %}
                     <a href="{% url 'cancel-booking-gui' booking.id %}" class="btn btn-danger w-100 mb-2" 
                        onclick="return confirm('Are you sure you want to cancel this booking?')">
                         <i class="fas fa-times"></i> Cancel Booking
                     </a>
                 {% elif booking.state == 'CANCELLED' and not booking.refund_processed %}
+                    {% if user.is_staff %}
+                        <a href="{% url 'process-refund-gui' booking.id %}" class="btn btn-warning w-100 mb-2">
+                            <i class="fas fa-money-bill-wave"></i> Process Refund
+                        </a>
+                    {% endif %}
                     <div class="alert alert-info">
                         <small><i class="fas fa-info-circle"></i> Refund will be processed within 3-5 business days.</small>
+                    </div>
+                {% elif booking.state == 'REFUNDED' %}
+                    <div class="alert alert-success">
+                        <small><i class="fas fa-check-circle"></i> Refund processed on {{ booking.refund_date|date:"M d, Y" }}</small>
                     </div>
                 {% endif %}
                 

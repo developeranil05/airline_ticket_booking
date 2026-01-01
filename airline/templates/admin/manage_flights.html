@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+
+{% block title %}Manage Flights - Admin{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <h2><i class="fas fa-plane"></i> Manage Flights</h2>
+        <a href="{% url 'add-flight' %}" class="btn btn-success">
+            <i class="fas fa-plus"></i> Add New Flight
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Code</th>
+                                <th>Route</th>
+                                <th>Departure</th>
+                                <th>Price</th>
+                                <th>Aircraft</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for flight in flights %}
+                            <tr>
+                                <td><strong>{{ flight.code }}</strong></td>
+                                <td>{{ flight.origin }} → {{ flight.destination }}</td>
+                                <td>{{ flight.departure_time|date:"M d, Y H:i" }}</td>
+                                <td>${{ flight.price }}</td>
+                                <td>{{ flight.aircraft_type }}</td>
+                                <td>
+                                    {% if flight.is_active %}
+                                        <span class="badge bg-success">Active</span>
+                                    {% else %}
+                                        <span class="badge bg-secondary">Inactive</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <a href="{% url 'flight-seats-gui' flight.id %}" class="btn btn-sm btn-primary">
+                                        <i class="fas fa-eye"></i> View Seats
+                                    </a>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="7" class="text-center">No flights found</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -57,13 +57,13 @@ class Flight(models.Model):
 
     def clean(self):
         from django.core.exceptions import ValidationError
-        if self.arrival_time <= self.departure_time:
-            raise ValidationError('Arrival time must be after departure time')
-        if self.departure_time <= timezone.now():
-            raise ValidationError('Departure time must be in the future')
+        if hasattr(self, 'arrival_time') and hasattr(self, 'departure_time'):
+            if self.arrival_time and self.departure_time and self.arrival_time <= self.departure_time:
+                raise ValidationError('Arrival time must be after departure time')
     
     def save(self, *args, **kwargs):
-        self.full_clean()
+        if not self.pk:  # Only validate on creation, not updates
+            self.full_clean()
         super().save(*args, **kwargs)
 
     def __str__(self):

@@ -15,10 +15,15 @@
             </a>
             <div class="navbar-nav ms-auto">
                 {% if user.is_authenticated %}
+                    {% if user.is_staff %}
+                        <a class="nav-link" href="{% url 'admin-dashboard' %}"><i class="fas fa-tachometer-alt"></i> Admin</a>
+                    {% endif %}
                     <a class="nav-link" href="{% url 'booking-list-gui' %}">My Bookings</a>
-                    <a class="nav-link" href="/admin/logout/">Logout</a>
+                    <span class="nav-link text-light">{{ user.username }}{% if user.is_staff %} (Admin){% endif %}</span>
+                    <a class="nav-link" href="{% url 'logout' %}">Logout</a>
                 {% else %}
-                    <a class="nav-link" href="/admin/login/">Login</a>
+                    <a class="nav-link" href="{% url 'login' %}">Sign In</a>
+                    <a class="nav-link" href="{% url 'register' %}">Register</a>
                 {% endif %}
             </div>
         </div>

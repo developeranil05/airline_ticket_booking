@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+
+{% block title %}Admin Dashboard - Airline Booking{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <h2><i class="fas fa-tachometer-alt"></i> Admin Dashboard</h2>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card bg-primary text-white">
+            <div class="card-body">
+                <h5><i class="fas fa-plane"></i> Total Flights</h5>
+                <h3>{{ stats.total_flights }}</h3>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-success text-white">
+            <div class="card-body">
+                <h5><i class="fas fa-ticket-alt"></i> Total Bookings</h5>
+                <h3>{{ stats.total_bookings }}</h3>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-info text-white">
+            <div class="card-body">
+                <h5><i class="fas fa-check"></i> Confirmed</h5>
+                <h3>{{ stats.confirmed_bookings }}</h3>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-warning text-white">
+            <div class="card-body">
+                <h5><i class="fas fa-money-bill"></i> Pending Refunds</h5>
+                <h3>{{ stats.pending_refunds }}</h3>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5><i class="fas fa-plane"></i> Flight Management</h5>
+            </div>
+            <div class="card-body">
+                <a href="{% url 'manage-flights' %}" class="btn btn-primary mb-2">
+                    <i class="fas fa-list"></i> Manage Flights
+                </a><br>
+                <a href="{% url 'add-flight' %}" class="btn btn-success">
+                    <i class="fas fa-plus"></i> Add New Flight
+                </a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5><i class="fas fa-money-bill"></i> Financial Management</h5>
+            </div>
+            <div class="card-body">
+                <a href="{% url 'pending-refunds' %}" class="btn btn-warning mb-2">
+                    <i class="fas fa-undo"></i> Process Refunds
+                </a><br>
+                <a href="{% url 'booking-list-gui' %}" class="btn btn-info">
+                    <i class="fas fa-eye"></i> View All Bookings
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

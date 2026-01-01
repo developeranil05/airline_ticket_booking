@@ -1,0 +1,123 @@
+{% extends 'base.html' %}
+
+{% block title %}Payment - Airline Booking{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'booking-list-gui' %}">My Bookings</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'booking-detail-gui' booking.id %}">{{ booking.booking_reference }}</a></li>
+                <li class="breadcrumb-item active">Payment</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header bg-success text-white">
+                <h4><i class="fas fa-credit-card"></i> Complete Payment</h4>
+            </div>
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Card Number</label>
+                            <input type="text" class="form-control" placeholder="1234 5678 9012 3456" maxlength="19" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Cardholder Name</label>
+                            <input type="text" class="form-control" placeholder="John Doe" required>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">Expiry Month</label>
+                            <select class="form-control" required>
+                                <option value="">MM</option>
+                                {% for i in "123456789012"|make_list %}
+                                <option value="{{ forloop.counter }}">{{ forloop.counter|stringformat:"02d" }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">Expiry Year</label>
+                            <select class="form-control" required>
+                                <option value="">YYYY</option>
+                                <option value="2024">2024</option>
+                                <option value="2025">2025</option>
+                                <option value="2026">2026</option>
+                                <option value="2027">2027</option>
+                                <option value="2028">2028</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">CVV</label>
+                            <input type="text" class="form-control" placeholder="123" maxlength="3" required>
+                        </div>
+                    </div>
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle"></i> This is a demo payment. Your card will not be charged.
+                    </div>
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-success btn-lg">
+                            <i class="fas fa-lock"></i> Pay ${{ booking.payment_amount }}
+                        </button>
+                        <a href="{% url 'booking-detail-gui' booking.id %}" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left"></i> Back to Booking
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header bg-dark text-white">
+                <h5><i class="fas fa-receipt"></i> Payment Summary</h5>
+            </div>
+            <div class="card-body">
+                <p><strong>Flight:</strong> {{ booking.seat.flight.code }}</p>
+                <p><strong>Route:</strong> {{ booking.seat.flight.origin }} → {{ booking.seat.flight.destination }}</p>
+                <p><strong>Seat:</strong> {{ booking.seat.seat_number }}</p>
+                <p><strong>Passenger:</strong> {{ booking.passenger_name }}</p>
+                <hr>
+                <p><strong>Amount:</strong> ${{ booking.payment_amount }}</p>
+                <div class="alert alert-warning">
+                    <small><i class="fas fa-clock"></i> Time remaining: <span id="countdown" class="fw-bold text-danger">Loading...</span></small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Countdown timer
+const holdUntil = new Date('{{ booking.seat_hold_until|date:"c" }}').getTime();
+
+function updateCountdown() {
+    const now = new Date().getTime();
+    const timeLeft = holdUntil - now;
+    
+    if (timeLeft > 0) {
+        const minutes = Math.floor(timeLeft / (1000 * 60));
+        const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
+        
+        document.getElementById('countdown').innerHTML = 
+            minutes + 'm ' + seconds + 's';
+    } else {
+        document.getElementById('countdown').innerHTML = 'EXPIRED';
+        alert('Payment time expired! Redirecting to booking details.');
+        window.location.href = "{% url 'booking-detail-gui' booking.id %}";
+    }
+}
+
+updateCountdown();
+setInterval(updateCountdown, 1000);
+</script>
+{% endblock %}

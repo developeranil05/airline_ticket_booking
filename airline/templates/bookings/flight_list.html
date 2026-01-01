@@ -3,51 +3,269 @@
 {% block title %}Available Flights - Airline Booking{% endblock %}
 
 {% block content %}
-<div class="row">
+<div class="row mb-4">
     <div class="col-12">
         <h2><i class="fas fa-plane-departure"></i> Available Flights</h2>
-        <hr>
     </div>
 </div>
 
-<div class="row">
-    {% for flight in flights %}
-    <div class="col-md-6 col-lg-4 mb-4">
-        <div class="card h-100">
-            <div class="card-header bg-primary text-white">
-                <h5 class="mb-0">{{ flight.code }}</h5>
-            </div>
-            <div class="card-body">
-                <div class="mb-3">
-                    <strong><i class="fas fa-map-marker-alt"></i> Route:</strong><br>
-                    {{ flight.origin }} → {{ flight.destination }}
-                </div>
-                <div class="mb-3">
-                    <strong><i class="fas fa-clock"></i> Departure:</strong><br>
-                    {{ flight.departure_time|date:"M d, Y H:i" }}
-                </div>
-                <div class="mb-3">
-                    <strong><i class="fas fa-dollar-sign"></i> Price:</strong><br>
-                    ${{ flight.price }}
-                </div>
-                <div class="mb-3">
-                    <strong><i class="fas fa-chair"></i> Available Seats:</strong><br>
-                    {{ flight.seats.count }} / {{ flight.total_seats }}
-                </div>
-            </div>
-            <div class="card-footer">
-                <a href="{% url 'flight-seats-gui' flight.id %}" class="btn btn-primary w-100">
-                    <i class="fas fa-eye"></i> View Seats
-                </a>
-            </div>
-        </div>
-    </div>
-    {% empty %}
+<div class="row mb-4">
     <div class="col-12">
-        <div class="alert alert-info">
-            <i class="fas fa-info-circle"></i> No flights available at the moment.
+        <div class="card">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-3">
+                        <label class="form-label">Origin</label>
+                        <div class="position-relative">
+                            <input type="text" id="origin" class="form-control" 
+                                   placeholder="From city" value="{{ origin }}" autocomplete="off">
+                            <div id="originSuggestions" class="suggestions-dropdown"></div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Destination</label>
+                        <div class="position-relative">
+                            <input type="text" id="destination" class="form-control" 
+                                   placeholder="To city" value="{{ destination }}" autocomplete="off">
+                            <div id="destinationSuggestions" class="suggestions-dropdown"></div>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label">Date</label>
+                        <input type="date" id="date" class="form-control" value="{{ date }}">
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label">Passengers</label>
+                        <select id="passengers" class="form-control">
+                            <option value="1" {% if passengers == '1' %}selected{% endif %}>1 Person</option>
+                            <option value="2" {% if passengers == '2' %}selected{% endif %}>2 Persons</option>
+                            <option value="3" {% if passengers == '3' %}selected{% endif %}>3 Persons</option>
+                            <option value="4" {% if passengers == '4' %}selected{% endif %}>4 Persons</option>
+                            <option value="5" {% if passengers == '5' %}selected{% endif %}>5 Persons</option>
+                            <option value="6" {% if passengers == '6' %}selected{% endif %}>6+ Persons</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label">&nbsp;</label>
+                        <button type="button" id="clearSearch" class="btn btn-outline-secondary d-block">
+                            <i class="fas fa-times"></i> Clear
+                        </button>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
-    {% endfor %}
 </div>
+
+<div id="flightResults">
+    <div class="row">
+        {% for flight in flights %}
+        <div class="col-md-6 col-lg-4 mb-4">
+            <div class="card h-100">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">{{ flight.code }}</h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <strong><i class="fas fa-map-marker-alt"></i> Route:</strong><br>
+                        {{ flight.origin }} → {{ flight.destination }}
+                    </div>
+                    <div class="mb-3">
+                        <strong><i class="fas fa-clock"></i> Departure:</strong><br>
+                        {{ flight.departure_time|date:"M d, Y H:i" }}
+                    </div>
+                    <div class="mb-3">
+                        <strong><i class="fas fa-dollar-sign"></i> Price:</strong><br>
+                        ${{ flight.price }}
+                    </div>
+                    <div class="mb-3">
+                        <strong><i class="fas fa-chair"></i> Seats:</strong><br>
+                        <span class="badge bg-success">{{ flight.available_seats_count }} Available</span>
+                        <span class="badge bg-danger">{{ flight.booked_seats_count }} Booked</span><br>
+                        <small class="text-muted">Total: {{ flight.total_seats_count }}</small>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <a href="{% url 'flight-seats-gui' flight.id %}" class="btn btn-primary w-100">
+                        <i class="fas fa-eye"></i> View Seats
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12">
+            <div class="alert alert-info">
+                <i class="fas fa-info-circle"></i> No flights found with current search criteria.
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<script>
+let searchTimeout;
+let suggestionTimeout;
+
+// CSS for suggestions dropdown
+const style = document.createElement('style');
+style.textContent = `
+.suggestions-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: white;
+    border: 1px solid #ddd;
+    border-top: none;
+    border-radius: 0 0 4px 4px;
+    max-height: 200px;
+    overflow-y: auto;
+    z-index: 1000;
+    display: none;
+}
+.suggestion-item {
+    padding: 8px 12px;
+    cursor: pointer;
+    border-bottom: 1px solid #eee;
+}
+.suggestion-item:hover {
+    background-color: #f8f9fa;
+}
+.suggestion-item:last-child {
+    border-bottom: none;
+}
+`;
+document.head.appendChild(style);
+
+function showSuggestions(inputId, suggestions) {
+    const dropdown = document.getElementById(inputId + 'Suggestions');
+    dropdown.innerHTML = '';
+    
+    if (suggestions.length === 0) {
+        dropdown.style.display = 'none';
+        return;
+    }
+    
+    suggestions.forEach(city => {
+        const item = document.createElement('div');
+        item.className = 'suggestion-item';
+        item.textContent = city;
+        item.onclick = () => {
+            document.getElementById(inputId).value = city;
+            dropdown.style.display = 'none';
+            performSearch();
+        };
+        dropdown.appendChild(item);
+    });
+    
+    dropdown.style.display = 'block';
+}
+
+function fetchSuggestions(query, field, inputId) {
+    // Show all options when field is empty or clicked
+    if (query.length === 0) {
+        fetch(`/api/cities/?q=&field=${field}&all=true`)
+            .then(response => response.json())
+            .then(data => showSuggestions(inputId, data.suggestions))
+            .catch(error => console.error('Suggestion error:', error));
+        return;
+    }
+    
+    if (query.length < 2) {
+        document.getElementById(inputId + 'Suggestions').style.display = 'none';
+        return;
+    }
+    
+    fetch(`/api/cities/?q=${encodeURIComponent(query)}&field=${field}`)
+        .then(response => response.json())
+        .then(data => showSuggestions(inputId, data.suggestions))
+        .catch(error => console.error('Suggestion error:', error));
+}
+
+function performSearch() {
+    const origin = document.getElementById('origin').value;
+    const destination = document.getElementById('destination').value;
+    const date = document.getElementById('date').value;
+    const passengers = document.getElementById('passengers').value;
+    
+    const params = new URLSearchParams();
+    if (origin) params.append('origin', origin);
+    if (destination) params.append('destination', destination);
+    if (date) params.append('date', date);
+    if (passengers) params.append('passengers', passengers);
+    
+    fetch(`/?${params.toString()}`, {
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest'
+        }
+    })
+    .then(response => response.text())
+    .then(html => {
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(html, 'text/html');
+        const newResults = doc.getElementById('flightResults');
+        document.getElementById('flightResults').innerHTML = newResults.innerHTML;
+    })
+    .catch(error => console.error('Search error:', error));
+}
+
+function debounceSearch() {
+    clearTimeout(searchTimeout);
+    searchTimeout = setTimeout(performSearch, 500);
+}
+
+function debounceSuggestions(query, field, inputId) {
+    clearTimeout(suggestionTimeout);
+    suggestionTimeout = setTimeout(() => fetchSuggestions(query, field, inputId), 300);
+}
+
+// Set date restrictions
+const today = new Date();
+const maxDate = new Date();
+maxDate.setFullYear(today.getFullYear() + 2);
+
+const dateInput = document.getElementById('date');
+dateInput.min = today.toISOString().split('T')[0];
+dateInput.max = maxDate.toISOString().split('T')[0];
+
+// Event listeners
+document.getElementById('origin').addEventListener('input', function(e) {
+    debounceSuggestions(e.target.value, 'origin', 'origin');
+    debounceSearch();
+});
+
+document.getElementById('origin').addEventListener('focus', function(e) {
+    fetchSuggestions('', 'origin', 'origin');
+});
+
+document.getElementById('destination').addEventListener('input', function(e) {
+    debounceSuggestions(e.target.value, 'destination', 'destination');
+    debounceSearch();
+});
+
+document.getElementById('destination').addEventListener('focus', function(e) {
+    fetchSuggestions('', 'destination', 'destination');
+});
+
+document.getElementById('date').addEventListener('change', performSearch);
+document.getElementById('passengers').addEventListener('change', performSearch);
+
+document.getElementById('clearSearch').addEventListener('click', function() {
+    document.getElementById('origin').value = '';
+    document.getElementById('destination').value = '';
+    document.getElementById('date').value = '';
+    document.getElementById('passengers').value = '1';
+    document.getElementById('originSuggestions').style.display = 'none';
+    document.getElementById('destinationSuggestions').style.display = 'none';
+    performSearch();
+});
+
+// Hide suggestions when clicking outside
+document.addEventListener('click', function(e) {
+    if (!e.target.closest('.position-relative')) {
+        document.getElementById('originSuggestions').style.display = 'none';
+        document.getElementById('destinationSuggestions').style.display = 'none';
+    }
+});
+</script>
 {% endblock %}

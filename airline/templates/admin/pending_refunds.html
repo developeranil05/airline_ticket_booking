@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+
+{% block title %}Pending Refunds - Admin{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <h2><i class="fas fa-money-bill"></i> Pending Refunds</h2>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Booking Ref</th>
+                                <th>Passenger</th>
+                                <th>Flight</th>
+                                <th>Amount</th>
+                                <th>Cancelled Date</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for booking in bookings %}
+                            <tr>
+                                <td><strong>{{ booking.booking_reference }}</strong></td>
+                                <td>{{ booking.passenger_name }}</td>
+                                <td>{{ booking.seat.flight.code }} - {{ booking.seat.seat_number }}</td>
+                                <td>${{ booking.payment_amount }}</td>
+                                <td>{{ booking.cancelled_date|date:"M d, Y H:i" }}</td>
+                                <td>
+                                    <a href="{% url 'process-refund-gui' booking.id %}" class="btn btn-sm btn-warning">
+                                        <i class="fas fa-undo"></i> Process Refund
+                                    </a>
+                                    <a href="{% url 'booking-detail-gui' booking.id %}" class="btn btn-sm btn-info">
+                                        <i class="fas fa-eye"></i> View Details
+                                    </a>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="6" class="text-center">No pending refunds</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
