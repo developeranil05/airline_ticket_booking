@@ -1,0 +1,96 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ flight.code }} Seats - Airline Booking{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'flight-list-gui' %}">Flights</a></li>
+                <li class="breadcrumb-item active">{{ flight.code }} Seats</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h4><i class="fas fa-plane"></i> {{ flight.code }} - {{ flight.origin }} to {{ flight.destination }}</h4>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <p><strong>Departure:</strong> {{ flight.departure_time|date:"M d, Y H:i" }}</p>
+                        <p><strong>Price:</strong> ${{ flight.price }}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <p><strong>Aircraft:</strong> {{ flight.aircraft_type }}</p>
+                        <p><strong>Available Seats:</strong> {{ seats|length }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <h5>Seat Map</h5>
+        <div class="mb-3">
+            <span class="badge bg-success me-2">Available</span>
+            <span class="badge bg-danger me-2">Booked</span>
+            <span class="badge bg-warning">Window</span>
+        </div>
+        
+        <div class="seat-map">
+            <style>
+                .seat {
+                    width: 40px;
+                    height: 40px;
+                    margin: 2px;
+                    border: 2px solid #ddd;
+                    border-radius: 8px;
+                    display: inline-flex;
+                    align-items: center;
+                    justify-content: center;
+                    font-size: 12px;
+                    font-weight: bold;
+                    cursor: pointer;
+                    text-decoration: none;
+                    color: #333;
+                }
+                .seat.available { background-color: #d4edda; border-color: #28a745; }
+                .seat.booked { background-color: #f8d7da; border-color: #dc3545; cursor: not-allowed; }
+                .seat.window { border-color: #ffc107; }
+                .seat:hover.available { background-color: #c3e6cb; }
+                .row-label { width: 30px; text-align: center; font-weight: bold; }
+                .aisle { width: 20px; }
+            </style>
+            
+            {% regroup seats by row_number as seat_rows %}
+            {% for row in seat_rows %}
+            <div class="d-flex align-items-center mb-1">
+                <div class="row-label">{{ row.grouper }}</div>
+                {% for seat in row.list %}
+                    {% if seat.seat_letter == 'D' %}<div class="aisle"></div>{% endif %}
+                    {% if seat.is_booked %}
+                        <div class="seat booked {% if seat.is_window %}window{% endif %}" title="Seat {{ seat.seat_number }} - Booked">
+                            {{ seat.seat_letter }}
+                        </div>
+                    {% else %}
+                        <a href="{% url 'book-seat-gui' seat.id %}" 
+                           class="seat available {% if seat.is_window %}window{% endif %}" 
+                           title="Seat {{ seat.seat_number }} - ${{ flight.price }}">
+                            {{ seat.seat_letter }}
+                        </a>
+                    {% endif %}
+                {% endfor %}
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}

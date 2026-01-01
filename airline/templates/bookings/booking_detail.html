@@ -1,0 +1,108 @@
+{% extends 'base.html' %}
+
+{% block title %}Booking {{ booking.booking_reference }} - Airline Booking{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'booking-list-gui' %}">My Bookings</a></li>
+                <li class="breadcrumb-item active">{{ booking.booking_reference }}</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                <h4><i class="fas fa-ticket-alt"></i> Booking Details</h4>
+                <span class="badge 
+                    {% if booking.state == 'CONFIRMED' %}bg-success
+                    {% elif booking.state == 'CANCELLED' %}bg-danger
+                    {% elif booking.state == 'SEAT_HELD' %}bg-warning
+                    {% elif booking.state == 'PAYMENT_PENDING' %}bg-info
+                    {% else %}bg-secondary{% endif %} fs-6">
+                    {{ booking.state }}
+                </span>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6>Flight Information</h6>
+                        <p><strong>Flight:</strong> {{ booking.seat.flight.code }}</p>
+                        <p><strong>Route:</strong> {{ booking.seat.flight.origin }} → {{ booking.seat.flight.destination }}</p>
+                        <p><strong>Departure:</strong> {{ booking.seat.flight.departure_time|date:"M d, Y H:i" }}</p>
+                        <p><strong>Aircraft:</strong> {{ booking.seat.flight.aircraft_type }}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <h6>Booking Information</h6>
+                        <p><strong>Reference:</strong> {{ booking.booking_reference }}</p>
+                        <p><strong>Seat:</strong> {{ booking.seat.seat_number }} ({{ booking.seat.seat_class }})</p>
+                        <p><strong>Passenger:</strong> {{ booking.passenger_name }}</p>
+                        <p><strong>Email:</strong> {{ booking.passenger_email }}</p>
+                        {% if booking.passenger_phone %}
+                        <p><strong>Phone:</strong> {{ booking.passenger_phone }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <hr>
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6>Payment Information</h6>
+                        <p><strong>Amount:</strong> ${{ booking.payment_amount }}</p>
+                        {% if booking.confirmed_date %}
+                        <p><strong>Confirmed:</strong> {{ booking.confirmed_date|date:"M d, Y H:i" }}</p>
+                        {% endif %}
+                    </div>
+                    <div class="col-md-6">
+                        <h6>Important Dates</h6>
+                        <p><strong>Booked:</strong> {{ booking.booking_date|date:"M d, Y H:i" }}</p>
+                        {% if booking.seat_hold_until %}
+                        <p><strong>Hold Until:</strong> {{ booking.seat_hold_until|date:"M d, Y H:i" }}</p>
+                        {% endif %}
+                        {% if booking.cancelled_date %}
+                        <p><strong>Cancelled:</strong> {{ booking.cancelled_date|date:"M d, Y H:i" }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header bg-info text-white">
+                <h5><i class="fas fa-cogs"></i> Actions</h5>
+            </div>
+            <div class="card-body">
+                {% if booking.state == 'SEAT_HELD' %}
+                    <a href="{% url 'process-payment-gui' booking.id %}" class="btn btn-success w-100 mb-2">
+                        <i class="fas fa-credit-card"></i> Pay Now
+                    </a>
+                    <div class="alert alert-warning">
+                        <small><i class="fas fa-clock"></i> Complete payment before {{ booking.seat_hold_until|date:"H:i" }}</small>
+                    </div>
+                {% elif booking.state == 'CONFIRMED' %}
+                    <a href="{% url 'cancel-booking-gui' booking.id %}" class="btn btn-danger w-100 mb-2" 
+                       onclick="return confirm('Are you sure you want to cancel this booking?')">
+                        <i class="fas fa-times"></i> Cancel Booking
+                    </a>
+                {% elif booking.state == 'CANCELLED' and not booking.refund_processed %}
+                    <div class="alert alert-info">
+                        <small><i class="fas fa-info-circle"></i> Refund will be processed within 3-5 business days.</small>
+                    </div>
+                {% endif %}
+                
+                <a href="{% url 'booking-list-gui' %}" class="btn btn-secondary w-100">
+                    <i class="fas fa-arrow-left"></i> Back to Bookings
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

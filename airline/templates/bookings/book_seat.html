@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+
+{% block title %}Book Seat {{ seat.seat_number }} - Airline Booking{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'flight-list-gui' %}">Flights</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'flight-seats-gui' seat.flight.id %}">{{ seat.flight.code }} Seats</a></li>
+                <li class="breadcrumb-item active">Book Seat {{ seat.seat_number }}</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h4><i class="fas fa-ticket-alt"></i> Book Seat {{ seat.seat_number }}</h4>
+            </div>
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="passenger_name" class="form-label">Passenger Name *</label>
+                            <input type="text" class="form-control" id="passenger_name" name="passenger_name" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="passenger_email" class="form-label">Email Address *</label>
+                            <input type="email" class="form-control" id="passenger_email" name="passenger_email" required>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="passenger_phone" class="form-label">Phone Number</label>
+                        <input type="tel" class="form-control" id="passenger_phone" name="passenger_phone">
+                    </div>
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-success btn-lg">
+                            <i class="fas fa-credit-card"></i> Book Seat - ${{ seat.flight.price }}
+                        </button>
+                        <a href="{% url 'flight-seats-gui' seat.flight.id %}" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left"></i> Back to Seat Selection
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header bg-info text-white">
+                <h5><i class="fas fa-info-circle"></i> Booking Summary</h5>
+            </div>
+            <div class="card-body">
+                <p><strong>Flight:</strong> {{ seat.flight.code }}</p>
+                <p><strong>Route:</strong> {{ seat.flight.origin }} → {{ seat.flight.destination }}</p>
+                <p><strong>Departure:</strong> {{ seat.flight.departure_time|date:"M d, Y H:i" }}</p>
+                <p><strong>Seat:</strong> {{ seat.seat_number }} ({{ seat.seat_class }})</p>
+                <p><strong>Price:</strong> ${{ seat.flight.price }}</p>
+                <hr>
+                <div class="alert alert-warning">
+                    <small><i class="fas fa-clock"></i> Seat will be held for 10 minutes after booking.</small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

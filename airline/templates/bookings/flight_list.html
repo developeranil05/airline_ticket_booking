@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+
+{% block title %}Available Flights - Airline Booking{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <h2><i class="fas fa-plane-departure"></i> Available Flights</h2>
+        <hr>
+    </div>
+</div>
+
+<div class="row">
+    {% for flight in flights %}
+    <div class="col-md-6 col-lg-4 mb-4">
+        <div class="card h-100">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">{{ flight.code }}</h5>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <strong><i class="fas fa-map-marker-alt"></i> Route:</strong><br>
+                    {{ flight.origin }} → {{ flight.destination }}
+                </div>
+                <div class="mb-3">
+                    <strong><i class="fas fa-clock"></i> Departure:</strong><br>
+                    {{ flight.departure_time|date:"M d, Y H:i" }}
+                </div>
+                <div class="mb-3">
+                    <strong><i class="fas fa-dollar-sign"></i> Price:</strong><br>
+                    ${{ flight.price }}
+                </div>
+                <div class="mb-3">
+                    <strong><i class="fas fa-chair"></i> Available Seats:</strong><br>
+                    {{ flight.seats.count }} / {{ flight.total_seats }}
+                </div>
+            </div>
+            <div class="card-footer">
+                <a href="{% url 'flight-seats-gui' flight.id %}" class="btn btn-primary w-100">
+                    <i class="fas fa-eye"></i> View Seats
+                </a>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <div class="col-12">
+        <div class="alert alert-info">
+            <i class="fas fa-info-circle"></i> No flights available at the moment.
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}
