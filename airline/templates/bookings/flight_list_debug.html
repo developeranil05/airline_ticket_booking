@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Flight Search - Debug</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap-datepicker@1.10.0/dist/js/bootstrap-datepicker.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-datepicker@1.10.0/dist/css/bootstrap-datepicker3.min.css" rel="stylesheet">
+</head>
+<body style="background: #f8f9fa; padding: 20px;">
+    <div class="container">
+        <h1 style="color: #000;">Flight Search - Debug Mode</h1>
+        
+        <div class="card">
+            <div class="card-body">
+                <h3 style="color: #000;">Search Flights</h3>
+                
+                <div class="row g-3">
+                    <div class="col-md-3">
+                        <label style="color: #000; font-weight: bold;">From:</label>
+                        <input type="text" id="origin" class="form-control" 
+                               placeholder="Origin city" value="{{ origin }}"
+                               style="color: #000 !important; background: #fff !important;">
+                        <div id="originSuggestions" style="position: absolute; background: white; border: 1px solid #ccc; display: none; z-index: 1000; width: 100%;"></div>
+                    </div>
+                    
+                    <div class="col-md-3">
+                        <label style="color: #000; font-weight: bold;">To:</label>
+                        <input type="text" id="destination" class="form-control" 
+                               placeholder="Destination city" value="{{ destination }}"
+                               style="color: #000 !important; background: #fff !important;">
+                        <div id="destinationSuggestions" style="position: absolute; background: white; border: 1px solid #ccc; display: none; z-index: 1000; width: 100%;"></div>
+                    </div>
+                    
+                    <div class="col-md-3">
+                        <label style="color: #000; font-weight: bold;">Date:</label>
+                        <input type="text" id="date" class="form-control" 
+                               placeholder="Select date" value="{{ date }}" readonly
+                               style="color: #000 !important; background: #fff !important;">
+                        <small style="color: #666;">Available: Jan 8-9, 2026</small>
+                    </div>
+                    
+                    <div class="col-md-3">
+                        <label style="color: #000; font-weight: bold;">Passengers:</label>
+                        <select id="passengers" class="form-control" style="color: #000 !important; background: #fff !important;">
+                            <option value="1">1 Person</option>
+                            <option value="2">2 Persons</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="mt-3">
+                    <button id="searchBtn" class="btn btn-primary">Search Flights</button>
+                    <button id="clearBtn" class="btn btn-secondary">Clear</button>
+                </div>
+            </div>
+        </div>
+        
+        <div id="debug" class="mt-3">
+            <h4 style="color: #000;">Debug Info:</h4>
+            <div id="debugLog" style="background: #000; color: #0f0; padding: 10px; font-family: monospace; height: 200px; overflow-y: scroll;"></div>
+        </div>
+        
+        <div id="results" class="mt-3">
+            {% if flights %}
+                <h3 style="color: #000;">Found {{ flights|length }} flights:</h3>
+                {% for flight in flights %}
+                    <div class="card mb-2">
+                        <div class="card-body">
+                            <h5 style="color: #000;">{{ flight.code }} - {{ flight.origin }} to {{ flight.destination }}</h5>
+                            <p style="color: #000;">Price: ${{ flight.price }} | Available: {{ flight.available_seats_count }}</p>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <p style="color: #000;">No flights found.</p>
+            {% endif %}
+        </div>
+    </div>
+
+<script>
+function log(msg) {
+    const debugLog = document.getElementById('debugLog');
+    debugLog.innerHTML += new Date().toLocaleTimeString() + ': ' + msg + '\n';
+    debugLog.scrollTop = debugLog.scrollHeight;
+    console.log(msg);
+}
+
+$(document).ready(function() {
+    log('Page loaded, jQuery ready');
+    
+    // Initialize datepicker
+    $('#date').datepicker({
+        format: 'yyyy-mm-dd',
+        startDate: new Date(),
+        autoclose: true
+    });
+    log('Datepicker initialized');
+    
+    // Test basic functionality
+    $('#origin').on('input', function() {
+        const val = $(this).val();
+        log('Origin input: ' + val);
+        if (val.length >= 1) {
+            fetchSuggestions(val, 'origin');
+        } else {
+            fetchSuggestions('', 'origin');
+        }
+    }).on('focus', function() {
+        log('Origin focused');
+        fetchSuggestions('', 'origin');
+    });
+    
+    $('#destination').on('input', function() {
+        const val = $(this).val();
+        log('Destination input: ' + val);
+        if (val.length >= 1) {
+            fetchSuggestions(val, 'destination');
+        } else {
+            fetchSuggestions('', 'destination');
+        }
+    }).on('focus', function() {
+        log('Destination focused');
+        fetchSuggestions('', 'destination');
+    });
+    
+    $('#searchBtn').on('click', function() {
+        log('Search button clicked');
+        performSearch();
+    });
+    
+    $('#clearBtn').on('click', function() {
+        log('Clear button clicked');
+        $('#origin').val('');
+        $('#destination').val('');
+        $('#date').val('');
+        $('#passengers').val('1');
+        $('.suggestions').hide();
+    });
+    
+    log('Event listeners attached');
+});
+
+function fetchSuggestions(query, field) {
+    log('Fetching suggestions for: ' + field + ' = "' + query + '"');
+    
+    let url;
+    if (query === '' || query.length === 0) {
+        url = '/api/cities/?field=' + field + '&all=true';
+    } else {
+        url = '/api/cities/?q=' + encodeURIComponent(query) + '&field=' + field;
+    }
+    
+    $.get(url)
+        .done(function(data) {
+            log('Suggestions received: ' + JSON.stringify(data));
+            showSuggestions(field, data.suggestions || []);
+        })
+        .fail(function(xhr) {
+            log('Suggestion error: ' + xhr.status + ' - ' + xhr.responseText);
+        });
+}
+
+function showSuggestions(field, suggestions) {
+    const dropdown = $('#' + field + 'Suggestions');
+    dropdown.empty();
+    
+    if (suggestions.length === 0) {
+        dropdown.hide();
+        return;
+    }
+    
+    suggestions.forEach(function(city) {
+        const item = $('<div style="padding: 5px; cursor: pointer; border-bottom: 1px solid #eee; color: #000;">' + city + '</div>');
+        item.on('click', function() {
+            $('#' + field).val(city);
+            dropdown.hide();
+            log('Selected: ' + city);
+        });
+        dropdown.append(item);
+    });
+    
+    dropdown.show();
+    log('Showing ' + suggestions.length + ' suggestions for ' + field);
+}
+
+function performSearch() {
+    const origin = $('#origin').val();
+    const destination = $('#destination').val();
+    const date = $('#date').val();
+    const passengers = $('#passengers').val();
+    
+    log('Searching with: origin=' + origin + ', dest=' + destination + ', date=' + date + ', pass=' + passengers);
+    
+    const params = new URLSearchParams();
+    if (origin) params.append('origin', origin);
+    if (destination) params.append('destination', destination);
+    if (date) params.append('date', date);
+    if (passengers) params.append('passengers', passengers);
+    
+    const url = '/?' + params.toString();
+    log('Redirecting to: ' + url);
+    window.location.href = url;
+}
+</script>
+</body>
+</html>

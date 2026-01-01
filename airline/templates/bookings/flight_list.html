@@ -1,114 +1,145 @@
 {% extends 'base.html' %}
 
-{% block title %}Available Flights - Airline Booking{% endblock %}
+{% block title %}SkyBooking - Your Journey Begins Here{% endblock %}
 
 {% block content %}
-<div class="row mb-4">
-    <div class="col-12">
-        <h2><i class="fas fa-plane-departure"></i> Available Flights</h2>
-    </div>
-</div>
-
-<div class="row mb-4">
-    <div class="col-12">
-        <div class="card">
-            <div class="card-body">
-                <div class="row">
-                    <div class="col-md-3">
-                        <label class="form-label">Origin</label>
-                        <div class="position-relative">
-                            <input type="text" id="origin" class="form-control" 
-                                   placeholder="From city" value="{{ origin }}" autocomplete="off">
-                            <div id="originSuggestions" class="suggestions-dropdown"></div>
+<div class="container-fluid p-0">
+    <!-- Hero Section -->
+    <div class="hero-section">
+        <div class="container">
+            <div class="row min-vh-100 align-items-center">
+                <div class="col-lg-6">
+                    <div class="hero-content">
+                        <h1 class="display-2 fw-bold mb-4 text-white">
+                            Discover Your
+                            <span class="text-warning">Dream Destination</span>
+                        </h1>
+                        <p class="lead mb-5 text-white">
+                            Experience seamless travel with our premium flight booking service.
+                        </p>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <!-- Search Card -->
+                    <div class="search-card bg-white p-4 rounded-3 shadow">
+                        <h3 class="mb-4 text-primary"><i class="fas fa-plane-departure me-2"></i>Book Your Flight</h3>
+                        
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label text-dark fw-bold">From</label>
+                                <div class="position-relative">
+                                    <input type="text" id="origin" class="form-control form-control-lg" 
+                                           placeholder="Departure city" value="{{ origin }}" autocomplete="off"
+                                           style="color: #000 !important; background: #fff !important;">
+                                    <div id="originSuggestions" class="suggestions-dropdown"></div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label text-dark fw-bold">To</label>
+                                <div class="position-relative">
+                                    <input type="text" id="destination" class="form-control form-control-lg" 
+                                           placeholder="Destination city" value="{{ destination }}" autocomplete="off"
+                                           style="color: #000 !important; background: #fff !important;">
+                                    <div id="destinationSuggestions" class="suggestions-dropdown"></div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label text-dark fw-bold">Departure Date</label>
+                                <input type="text" id="date" class="form-control form-control-lg" 
+                                       placeholder="Select date" value="{{ date }}" readonly
+                                       style="color: #000 !important; background: #fff !important; cursor: pointer;">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label text-dark fw-bold">Passengers</label>
+                                <select id="passengers" class="form-select form-select-lg"
+                                        style="color: #000 !important; background: #fff !important;">
+                                    <option value="1" {% if passengers == '1' %}selected{% endif %}>1 Person</option>
+                                    <option value="2" {% if passengers == '2' %}selected{% endif %}>2 Persons</option>
+                                    <option value="3" {% if passengers == '3' %}selected{% endif %}>3 Persons</option>
+                                    <option value="4" {% if passengers == '4' %}selected{% endif %}>4 Persons</option>
+                                    <option value="5" {% if passengers == '5' %}selected{% endif %}>5 Persons</option>
+                                    <option value="6" {% if passengers == '6' %}selected{% endif %}>6+ Persons</option>
+                                </select>
+                            </div>
+                            <div class="col-12">
+                                <div class="d-flex gap-3">
+                                    <button type="button" id="searchFlights" class="btn btn-primary btn-lg flex-fill">
+                                        <i class="fas fa-search me-2"></i>Search Flights
+                                    </button>
+                                    <button type="button" id="clearSearch" class="btn btn-outline-secondary btn-lg">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                    <div class="col-md-3">
-                        <label class="form-label">Destination</label>
-                        <div class="position-relative">
-                            <input type="text" id="destination" class="form-control" 
-                                   placeholder="To city" value="{{ destination }}" autocomplete="off">
-                            <div id="destinationSuggestions" class="suggestions-dropdown"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Results Section -->
+    <div id="flightResults" class="py-5">
+        {% if flights %}
+        <div class="container">
+            <h3 class="fw-bold mb-4 text-dark"><i class="fas fa-plane me-2"></i>Available Flights</h3>
+            <div class="row g-4">
+                {% for flight in flights %}
+                <div class="col-xl-4 col-lg-6">
+                    <div class="card h-100 shadow">
+                        <div class="card-header bg-primary text-white">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <i class="fas fa-plane me-2"></i>{{ flight.code }}
+                                </div>
+                                <div class="text-end">
+                                    <div class="h5 mb-0">${{ flight.price }}</div>
+                                    <small>per person</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <div class="text-center">
+                                    <div class="fw-bold text-primary">{{ flight.origin }}</div>
+                                    <div class="text-muted">{{ flight.departure_time|date:"H:i" }}</div>
+                                </div>
+                                <div class="text-center">
+                                    <i class="fas fa-plane text-muted"></i>
+                                </div>
+                                <div class="text-center">
+                                    <div class="fw-bold text-success">{{ flight.destination }}</div>
+                                    <div class="text-muted">{{ flight.arrival_time|date:"H:i" }}</div>
+                                </div>
+                            </div>
+                            <div class="text-center mb-3">
+                                <small class="text-muted">{{ flight.departure_time|date:"M d, Y" }}</small>
+                            </div>
+                            <div class="d-flex justify-content-between text-sm">
+                                <span class="text-success">{{ flight.available_seats_count }} available</span>
+                                <span class="text-muted">{{ flight.aircraft_type }}</span>
+                            </div>
+                        </div>
+                        <div class="card-footer">
+                            <a href="{% url 'flight-seats-gui' flight.id %}" class="btn btn-primary w-100">
+                                Select Seats <i class="fas fa-arrow-right ms-2"></i>
+                            </a>
                         </div>
                     </div>
-                    <div class="col-md-2">
-                        <label class="form-label">Date</label>
-                        <input type="date" id="date" class="form-control" value="{{ date }}">
-                    </div>
-                    <div class="col-md-2">
-                        <label class="form-label">Passengers</label>
-                        <select id="passengers" class="form-control">
-                            <option value="1" {% if passengers == '1' %}selected{% endif %}>1 Person</option>
-                            <option value="2" {% if passengers == '2' %}selected{% endif %}>2 Persons</option>
-                            <option value="3" {% if passengers == '3' %}selected{% endif %}>3 Persons</option>
-                            <option value="4" {% if passengers == '4' %}selected{% endif %}>4 Persons</option>
-                            <option value="5" {% if passengers == '5' %}selected{% endif %}>5 Persons</option>
-                            <option value="6" {% if passengers == '6' %}selected{% endif %}>6+ Persons</option>
-                        </select>
-                    </div>
-                    <div class="col-md-2">
-                        <label class="form-label">&nbsp;</label>
-                        <button type="button" id="clearSearch" class="btn btn-outline-secondary d-block">
-                            <i class="fas fa-times"></i> Clear
-                        </button>
-                    </div>
                 </div>
+                {% endfor %}
             </div>
         </div>
+        {% endif %}
     </div>
 </div>
 
-<div id="flightResults">
-    <div class="row">
-        {% for flight in flights %}
-        <div class="col-md-6 col-lg-4 mb-4">
-            <div class="card h-100">
-                <div class="card-header bg-primary text-white">
-                    <h5 class="mb-0">{{ flight.code }}</h5>
-                </div>
-                <div class="card-body">
-                    <div class="mb-3">
-                        <strong><i class="fas fa-map-marker-alt"></i> Route:</strong><br>
-                        {{ flight.origin }} → {{ flight.destination }}
-                    </div>
-                    <div class="mb-3">
-                        <strong><i class="fas fa-clock"></i> Departure:</strong><br>
-                        {{ flight.departure_time|date:"M d, Y H:i" }}
-                    </div>
-                    <div class="mb-3">
-                        <strong><i class="fas fa-dollar-sign"></i> Price:</strong><br>
-                        ${{ flight.price }}
-                    </div>
-                    <div class="mb-3">
-                        <strong><i class="fas fa-chair"></i> Seats:</strong><br>
-                        <span class="badge bg-success">{{ flight.available_seats_count }} Available</span>
-                        <span class="badge bg-danger">{{ flight.booked_seats_count }} Booked</span><br>
-                        <small class="text-muted">Total: {{ flight.total_seats_count }}</small>
-                    </div>
-                </div>
-                <div class="card-footer">
-                    <a href="{% url 'flight-seats-gui' flight.id %}" class="btn btn-primary w-100">
-                        <i class="fas fa-eye"></i> View Seats
-                    </a>
-                </div>
-            </div>
-        </div>
-        {% empty %}
-        <div class="col-12">
-            <div class="alert alert-info">
-                <i class="fas fa-info-circle"></i> No flights found with current search criteria.
-            </div>
-        </div>
-        {% endfor %}
-    </div>
-</div>
+<style>
+.hero-section {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+}
 
-<script>
-let searchTimeout;
-let suggestionTimeout;
-
-// CSS for suggestions dropdown
-const style = document.createElement('style');
-style.textContent = `
 .suggestions-dropdown {
     position: absolute;
     top: 100%;
@@ -116,77 +147,152 @@ style.textContent = `
     right: 0;
     background: white;
     border: 1px solid #ddd;
-    border-top: none;
-    border-radius: 0 0 4px 4px;
+    border-radius: 8px;
     max-height: 200px;
     overflow-y: auto;
     z-index: 1000;
     display: none;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
+
 .suggestion-item {
-    padding: 8px 12px;
+    padding: 10px 15px;
     cursor: pointer;
     border-bottom: 1px solid #eee;
+    color: #333 !important;
 }
+
 .suggestion-item:hover {
-    background-color: #f8f9fa;
+    background: #f8f9fa;
 }
+
 .suggestion-item:last-child {
     border-bottom: none;
 }
-`;
-document.head.appendChild(style);
 
-function showSuggestions(inputId, suggestions) {
-    const dropdown = document.getElementById(inputId + 'Suggestions');
-    dropdown.innerHTML = '';
-    
-    if (suggestions.length === 0) {
-        dropdown.style.display = 'none';
-        return;
-    }
-    
-    suggestions.forEach(city => {
-        const item = document.createElement('div');
-        item.className = 'suggestion-item';
-        item.textContent = city;
-        item.onclick = () => {
-            document.getElementById(inputId).value = city;
-            dropdown.style.display = 'none';
-            performSearch();
-        };
-        dropdown.appendChild(item);
-    });
-    
-    dropdown.style.display = 'block';
+/* Force text colors */
+input, select, option {
+    color: #000 !important;
 }
 
-function fetchSuggestions(query, field, inputId) {
-    // Show all options when field is empty or clicked
-    if (query.length === 0) {
-        fetch(`/api/cities/?q=&field=${field}&all=true`)
-            .then(response => response.json())
-            .then(data => showSuggestions(inputId, data.suggestions))
-            .catch(error => console.error('Suggestion error:', error));
+input::placeholder {
+    color: #666 !important;
+}
+</style>
+
+<script>
+// Cache buster: 2026-01-01-20:15
+$(document).ready(function() {
+    console.log('Page loaded, initializing...');
+    
+    // Initialize datepicker
+    $('#date').datepicker({
+        format: 'yyyy-mm-dd',
+        startDate: new Date(),
+        autoclose: true,
+        todayHighlight: true
+    });
+    
+    // Origin input events
+    $('#origin').on('input', function() {
+        const query = $(this).val();
+        console.log('Origin input:', query);
+        if (query.length >= 1) {
+            fetchSuggestions(query, 'origin');
+        } else {
+            fetchSuggestions('', 'origin');
+        }
+    }).on('focus', function() {
+        console.log('Origin focused');
+        fetchSuggestions('', 'origin');
+    });
+    
+    // Destination input events
+    $('#destination').on('input', function() {
+        const query = $(this).val();
+        console.log('Destination input:', query);
+        if (query.length >= 1) {
+            fetchSuggestions(query, 'destination');
+        } else {
+            fetchSuggestions('', 'destination');
+        }
+    }).on('focus', function() {
+        console.log('Destination focused');
+        fetchSuggestions('', 'destination');
+    });
+    
+    // Search button
+    $('#searchFlights').on('click', function() {
+        console.log('Search clicked');
+        performSearch();
+    });
+    
+    // Clear button
+    $('#clearSearch').on('click', function() {
+        console.log('Clear clicked');
+        $('#origin').val('');
+        $('#destination').val('');
+        $('#date').val('');
+        $('#passengers').val('1');
+        $('#originSuggestions').hide();
+        $('#destinationSuggestions').hide();
+        $('#flightResults').html('');
+    });
+    
+    // Auto-search on field changes
+    $('#date, #passengers').on('change', function() {
+        console.log('Field changed, auto-searching');
+        performSearch();
+    });
+});
+
+function fetchSuggestions(query, field) {
+    console.log('Fetching suggestions:', query, field);
+    
+    const url = query.length === 0 ? 
+        `/api/cities/?field=${field}&all=true` : 
+        `/api/cities/?q=${encodeURIComponent(query)}&field=${field}`;
+    
+    $.get(url)
+        .done(function(data) {
+            console.log('Suggestions received:', data);
+            showSuggestions(field, data.suggestions || []);
+        })
+        .fail(function(xhr) {
+            console.error('Suggestion error:', xhr.responseText);
+        });
+}
+
+function showSuggestions(field, suggestions) {
+    const dropdown = $(`#${field}Suggestions`);
+    dropdown.empty();
+    
+    if (suggestions.length === 0) {
+        dropdown.hide();
         return;
     }
     
-    if (query.length < 2) {
-        document.getElementById(inputId + 'Suggestions').style.display = 'none';
-        return;
-    }
+    suggestions.forEach(function(city) {
+        const item = $('<div class="suggestion-item"></div>')
+            .text(city)
+            .on('click', function() {
+                $(`#${field}`).val(city);
+                dropdown.hide();
+                performSearch();
+            });
+        dropdown.append(item);
+    });
     
-    fetch(`/api/cities/?q=${encodeURIComponent(query)}&field=${field}`)
-        .then(response => response.json())
-        .then(data => showSuggestions(inputId, data.suggestions))
-        .catch(error => console.error('Suggestion error:', error));
+    dropdown.show();
 }
 
 function performSearch() {
-    const origin = document.getElementById('origin').value;
-    const destination = document.getElementById('destination').value;
-    const date = document.getElementById('date').value;
-    const passengers = document.getElementById('passengers').value;
+    const origin = $('#origin').val();
+    const destination = $('#destination').val();
+    const date = $('#date').val();
+    const passengers = $('#passengers').val();
+    
+    console.log('Searching:', { origin, destination, date, passengers });
     
     const params = new URLSearchParams();
     if (origin) params.append('origin', origin);
@@ -194,77 +300,21 @@ function performSearch() {
     if (date) params.append('date', date);
     if (passengers) params.append('passengers', passengers);
     
-    fetch(`/?${params.toString()}`, {
-        headers: {
-            'X-Requested-With': 'XMLHttpRequest'
-        }
-    })
-    .then(response => response.text())
-    .then(html => {
-        const parser = new DOMParser();
-        const doc = parser.parseFromString(html, 'text/html');
-        const newResults = doc.getElementById('flightResults');
-        document.getElementById('flightResults').innerHTML = newResults.innerHTML;
-    })
-    .catch(error => console.error('Search error:', error));
+    $.get(`/?${params.toString()}`, { 'X-Requested-With': 'XMLHttpRequest' })
+        .done(function(html) {
+            console.log('Search completed');
+            const newResults = $(html).find('#flightResults').html();
+            $('#flightResults').html(newResults);
+        })
+        .fail(function(xhr) {
+            console.error('Search error:', xhr.responseText);
+        });
 }
-
-function debounceSearch() {
-    clearTimeout(searchTimeout);
-    searchTimeout = setTimeout(performSearch, 500);
-}
-
-function debounceSuggestions(query, field, inputId) {
-    clearTimeout(suggestionTimeout);
-    suggestionTimeout = setTimeout(() => fetchSuggestions(query, field, inputId), 300);
-}
-
-// Set date restrictions
-const today = new Date();
-const maxDate = new Date();
-maxDate.setFullYear(today.getFullYear() + 2);
-
-const dateInput = document.getElementById('date');
-dateInput.min = today.toISOString().split('T')[0];
-dateInput.max = maxDate.toISOString().split('T')[0];
-
-// Event listeners
-document.getElementById('origin').addEventListener('input', function(e) {
-    debounceSuggestions(e.target.value, 'origin', 'origin');
-    debounceSearch();
-});
-
-document.getElementById('origin').addEventListener('focus', function(e) {
-    fetchSuggestions('', 'origin', 'origin');
-});
-
-document.getElementById('destination').addEventListener('input', function(e) {
-    debounceSuggestions(e.target.value, 'destination', 'destination');
-    debounceSearch();
-});
-
-document.getElementById('destination').addEventListener('focus', function(e) {
-    fetchSuggestions('', 'destination', 'destination');
-});
-
-document.getElementById('date').addEventListener('change', performSearch);
-document.getElementById('passengers').addEventListener('change', performSearch);
-
-document.getElementById('clearSearch').addEventListener('click', function() {
-    document.getElementById('origin').value = '';
-    document.getElementById('destination').value = '';
-    document.getElementById('date').value = '';
-    document.getElementById('passengers').value = '1';
-    document.getElementById('originSuggestions').style.display = 'none';
-    document.getElementById('destinationSuggestions').style.display = 'none';
-    performSearch();
-});
 
 // Hide suggestions when clicking outside
-document.addEventListener('click', function(e) {
-    if (!e.target.closest('.position-relative')) {
-        document.getElementById('originSuggestions').style.display = 'none';
-        document.getElementById('destinationSuggestions').style.display = 'none';
+$(document).on('click', function(e) {
+    if (!$(e.target).closest('.position-relative').length) {
+        $('.suggestions-dropdown').hide();
     }
 });
 </script>

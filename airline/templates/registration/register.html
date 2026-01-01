@@ -1,59 +1,221 @@
 {% extends 'base.html' %}
 
-{% block title %}Register - Airline Booking{% endblock %}
+{% block title %}Create Account - SkyBooking{% endblock %}
 
 {% block content %}
-<div class="row justify-content-center">
-    <div class="col-md-6">
-        <div class="card">
-            <div class="card-header bg-success text-white">
-                <h4><i class="fas fa-user-plus"></i> Create Account</h4>
-            </div>
-            <div class="card-body">
-                <form method="post">
+<div class="row justify-content-center min-vh-100 align-items-center">
+    <div class="col-lg-6 col-md-8 col-sm-10">
+        <div class="card border-0 shadow-lg" style="backdrop-filter: blur(20px); background: rgba(255, 255, 255, 0.95);">
+            <div class="card-body p-5">
+                <div class="text-center mb-4">
+                    <div class="mb-3">
+                        <i class="fas fa-user-plus fa-3x text-success"></i>
+                    </div>
+                    <h2 class="fw-bold text-dark mb-2">Join SkyBooking</h2>
+                    <p class="text-muted">Create your account and start your journey</p>
+                </div>
+                
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="alert alert-danger border-0 rounded-3 mb-4">
+                            <i class="fas fa-exclamation-triangle me-2"></i>{{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+                
+                <form method="post" class="needs-validation" novalidate>
                     {% csrf_token %}
-                    <div class="row">
+                    
+                    <div class="row mb-4">
                         <div class="col-md-6">
-                            <div class="mb-3">
-                                <label for="first_name" class="form-label">First Name *</label>
-                                <input type="text" class="form-control" id="first_name" name="first_name" required>
+                            <label for="first_name" class="form-label fw-semibold text-dark">
+                                <i class="fas fa-user text-success me-2"></i>First Name *
+                            </label>
+                            <input type="text" class="form-control form-control-lg" 
+                                   id="first_name" name="first_name" 
+                                   placeholder="Your first name" required>
+                            <div class="invalid-feedback">
+                                Please provide your first name.
                             </div>
                         </div>
                         <div class="col-md-6">
-                            <div class="mb-3">
-                                <label for="last_name" class="form-label">Last Name *</label>
-                                <input type="text" class="form-control" id="last_name" name="last_name" required>
+                            <label for="last_name" class="form-label fw-semibold text-dark">
+                                <i class="fas fa-user text-success me-2"></i>Last Name *
+                            </label>
+                            <input type="text" class="form-control form-control-lg" 
+                                   id="last_name" name="last_name" 
+                                   placeholder="Your last name" required>
+                            <div class="invalid-feedback">
+                                Please provide your last name.
                             </div>
                         </div>
                     </div>
-                    <div class="mb-3">
-                        <label for="username" class="form-label">Username</label>
-                        <input type="text" class="form-control" id="username" name="username" required>
+                    
+                    <div class="mb-4">
+                        <label for="username" class="form-label fw-semibold text-dark">
+                            <i class="fas fa-at text-info me-2"></i>Username
+                        </label>
+                        <input type="text" class="form-control form-control-lg" 
+                               id="username" name="username" 
+                               placeholder="Choose a username" required>
+                        <div class="invalid-feedback">
+                            Please choose a username.
+                        </div>
                     </div>
-                    <div class="mb-3">
-                        <label for="email" class="form-label">Email Address</label>
-                        <input type="email" class="form-control" id="email" name="email" required>
+                    
+                    <div class="mb-4">
+                        <label for="email" class="form-label fw-semibold text-dark">
+                            <i class="fas fa-envelope text-warning me-2"></i>Email Address
+                        </label>
+                        <input type="email" class="form-control form-control-lg" 
+                               id="email" name="email" 
+                               placeholder="your.email@example.com" required>
+                        <div class="invalid-feedback">
+                            Please provide a valid email address.
+                        </div>
                     </div>
-                    <div class="mb-3">
-                        <label for="password" class="form-label">Password</label>
-                        <input type="password" class="form-control" id="password" name="password" required>
+                    
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <label for="password" class="form-label fw-semibold text-dark">
+                                <i class="fas fa-lock text-danger me-2"></i>Password
+                            </label>
+                            <div class="position-relative">
+                                <input type="password" class="form-control form-control-lg" 
+                                       id="password" name="password" 
+                                       placeholder="Create password" required minlength="8">
+                                <button type="button" class="btn btn-link position-absolute end-0 top-50 translate-middle-y" 
+                                        onclick="togglePassword('password', 'toggleIcon1')" style="z-index: 10;">
+                                    <i class="fas fa-eye" id="toggleIcon1"></i>
+                                </button>
+                            </div>
+                            <div class="invalid-feedback">
+                                Password must be at least 8 characters long.
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="confirm_password" class="form-label fw-semibold text-dark">
+                                <i class="fas fa-lock text-danger me-2"></i>Confirm Password
+                            </label>
+                            <div class="position-relative">
+                                <input type="password" class="form-control form-control-lg" 
+                                       id="confirm_password" name="confirm_password" 
+                                       placeholder="Confirm password" required>
+                                <button type="button" class="btn btn-link position-absolute end-0 top-50 translate-middle-y" 
+                                        onclick="togglePassword('confirm_password', 'toggleIcon2')" style="z-index: 10;">
+                                    <i class="fas fa-eye" id="toggleIcon2"></i>
+                                </button>
+                            </div>
+                            <div class="invalid-feedback">
+                                Please confirm your password.
+                            </div>
+                        </div>
                     </div>
-                    <div class="mb-3">
-                        <label for="confirm_password" class="form-label">Confirm Password</label>
-                        <input type="password" class="form-control" id="confirm_password" name="confirm_password" required>
+                    
+                    <div class="mb-4">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="terms" required>
+                            <label class="form-check-label text-muted" for="terms">
+                                I agree to the <a href="#" class="text-decoration-none">Terms of Service</a> and 
+                                <a href="#" class="text-decoration-none">Privacy Policy</a>
+                            </label>
+                            <div class="invalid-feedback">
+                                You must agree to the terms and conditions.
+                            </div>
+                        </div>
                     </div>
-                    <div class="d-grid">
-                        <button type="submit" class="btn btn-success">
-                            <i class="fas fa-user-plus"></i> Create Account
+                    
+                    <div class="d-grid mb-4">
+                        <button type="submit" class="btn btn-success btn-lg">
+                            <i class="fas fa-user-plus me-2"></i>Create Account
                         </button>
                     </div>
                 </form>
-                <hr>
+                
                 <div class="text-center">
-                    <small>Already have an account? <a href="{% url 'login' %}">Sign In</a></small>
+                    <div class="mb-3">
+                        <span class="text-muted">Already have an account?</span>
+                        <a href="{% url 'login' %}" class="text-decoration-none fw-semibold">Sign In</a>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+<script>
+function togglePassword(fieldId, iconId) {
+    const passwordField = document.getElementById(fieldId);
+    const toggleIcon = document.getElementById(iconId);
+    
+    if (passwordField.type === 'password') {
+        passwordField.type = 'text';
+        toggleIcon.classList.remove('fa-eye');
+        toggleIcon.classList.add('fa-eye-slash');
+    } else {
+        passwordField.type = 'password';
+        toggleIcon.classList.remove('fa-eye-slash');
+        toggleIcon.classList.add('fa-eye');
+    }
+}
+
+// Password matching validation
+function validatePasswordMatch() {
+    const password = document.getElementById('password').value;
+    const confirmPassword = document.getElementById('confirm_password').value;
+    const confirmField = document.getElementById('confirm_password');
+    
+    if (password !== confirmPassword) {
+        confirmField.setCustomValidity('Passwords do not match');
+    } else {
+        confirmField.setCustomValidity('');
+    }
+}
+
+document.getElementById('password').addEventListener('input', validatePasswordMatch);
+document.getElementById('confirm_password').addEventListener('input', validatePasswordMatch);
+
+// Form validation
+(function() {
+    'use strict';
+    window.addEventListener('load', function() {
+        var forms = document.getElementsByClassName('needs-validation');
+        var validation = Array.prototype.filter.call(forms, function(form) {
+            form.addEventListener('submit', function(event) {
+                validatePasswordMatch();
+                if (form.checkValidity() === false) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
+                form.classList.add('was-validated');
+            }, false);
+        });
+    }, false);
+})();
+</script>
+
+<style>
+.min-vh-100 {
+    min-height: calc(100vh - 100px);
+}
+
+.form-control:focus {
+    border-color: var(--success-color);
+    box-shadow: 0 0 0 0.25rem rgba(16, 185, 129, 0.15);
+}
+
+.btn-link {
+    color: #6c757d;
+    text-decoration: none;
+}
+
+.btn-link:hover {
+    color: var(--primary-color);
+}
+
+.form-check-input:checked {
+    background-color: var(--success-color);
+    border-color: var(--success-color);
+}
+</style>
 {% endblock %}

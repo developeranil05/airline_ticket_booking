@@ -19,6 +19,9 @@ from .template_views import (
     process_booking_payment,
     cancel_booking_view,
     process_refund_view,
+    edit_passenger,
+    delete_booking,
+    change_passengers,
 )
 from . import admin_views
 from .api_autocomplete import city_suggestions
@@ -52,5 +55,8 @@ urlpatterns = [
     path("booking/<int:booking_id>/pay/", process_booking_payment, name="process-payment-gui"),
     path("booking/<int:booking_id>/cancel/", cancel_booking_view, name="cancel-booking-gui"),
     path("booking/<int:booking_id>/refund/", process_refund_view, name="process-refund-gui"),
+    path("booking/<int:booking_id>/edit/", edit_passenger, name="edit-passenger-gui"),
+    path("booking/<int:booking_id>/delete/", delete_booking, name="delete-booking-gui"),
+    path("booking/<int:booking_id>/change-passengers/", change_passengers, name="change-passengers-gui"),
 ]
 

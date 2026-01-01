@@ -1,57 +1,317 @@
-{% extends 'base.html' %}
-
-{% block title %}Pending Refunds - Admin{% endblock %}
-
-{% block content %}
-<div class="row mb-4">
-    <div class="col-12">
-        <h2><i class="fas fa-money-bill"></i> Pending Refunds</h2>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pending Refunds - SkyBooking Admin</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+            min-height: 100vh;
+        }
+        
+        .navbar {
+            background: rgba(255, 255, 255, 0.95) !important;
+            backdrop-filter: blur(20px);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+        }
+        
+        .navbar-brand {
+            font-weight: 800;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .glass-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+            border-radius: 20px;
+        }
+        
+        .refund-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
+            border-radius: 20px;
+            transition: all 0.3s ease;
+            margin-bottom: 1.5rem;
+            border-left: 4px solid #f59e0b;
+        }
+        
+        .refund-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15);
+        }
+        
+        .route-display {
+            background: rgba(245, 158, 11, 0.1);
+            border-radius: 12px;
+            padding: 1rem;
+            margin: 1rem 0;
+            text-align: center;
+        }
+        
+        .route-cities {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+        }
+        
+        .city-badge {
+            background: white;
+            border-radius: 8px;
+            padding: 0.5rem 1rem;
+            font-weight: 600;
+            color: #1e293b;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .flight-icon {
+            color: #f59e0b;
+            font-size: 1.2rem;
+        }
+        
+        .refund-amount {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 1.1rem;
+            display: inline-block;
+        }
+        
+        .btn {
+            border-radius: 12px;
+            font-weight: 600;
+            padding: 0.75rem 1.5rem;
+            transition: all 0.3s ease;
+            border: none;
+        }
+        
+        .btn-warning {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            box-shadow: 0 6px 20px rgba(245, 158, 11, 0.3);
+        }
+        
+        .btn-warning:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(245, 158, 11, 0.4);
+        }
+        
+        .btn-info {
+            background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
+            box-shadow: 0 6px 20px rgba(6, 182, 212, 0.3);
+        }
+        
+        .btn-info:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(6, 182, 212, 0.4);
+        }
+        
+        .btn-sm {
+            padding: 0.5rem 1rem;
+            font-size: 0.875rem;
+        }
+        
+        .admin-badge {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+        
+        .breadcrumb {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            padding: 1rem 1.5rem;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 20px;
+            backdrop-filter: blur(20px);
+        }
+        
+        .empty-icon {
+            font-size: 4rem;
+            color: #10b981;
+            margin-bottom: 1rem;
+        }
+        
+        .urgent-badge {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 50px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        
+        .seat-visual {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            color: white;
+            width: 35px;
+            height: 35px;
+            border-radius: 8px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.9rem;
+            margin-right: 0.5rem;
+        }
+    </style>
+</head>
+<body>
+<!-- Navigation -->
+<nav class="navbar navbar-expand-lg navbar-light fixed-top">
+    <div class="container">
+        <a class="navbar-brand fw-bold" href="{% url 'flight-list-gui' %}">
+            <i class="fas fa-plane me-2"></i>SkyBooking
+        </a>
+        <div class="navbar-nav ms-auto">
+            {% if user.is_authenticated %}
+                <span class="admin-badge me-3"><i class="fas fa-shield-alt me-1"></i>Admin</span>
+                <span class="nav-link fw-bold" style="color: #667eea;">Hello, {{ user.first_name }}!</span>
+                <a class="nav-link fw-bold" href="{% url 'logout' %}" style="color: #667eea;">Logout</a>
+            {% endif %}
+        </div>
     </div>
-</div>
+</nav>
 
-<div class="row">
-    <div class="col-12">
-        <div class="card">
-            <div class="card-body">
-                <div class="table-responsive">
-                    <table class="table table-striped">
-                        <thead>
-                            <tr>
-                                <th>Booking Ref</th>
-                                <th>Passenger</th>
-                                <th>Flight</th>
-                                <th>Amount</th>
-                                <th>Cancelled Date</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for booking in bookings %}
-                            <tr>
-                                <td><strong>{{ booking.booking_reference }}</strong></td>
-                                <td>{{ booking.passenger_name }}</td>
-                                <td>{{ booking.seat.flight.code }} - {{ booking.seat.seat_number }}</td>
-                                <td>${{ booking.payment_amount }}</td>
-                                <td>{{ booking.cancelled_date|date:"M d, Y H:i" }}</td>
-                                <td>
-                                    <a href="{% url 'process-refund-gui' booking.id %}" class="btn btn-sm btn-warning">
-                                        <i class="fas fa-undo"></i> Process Refund
-                                    </a>
-                                    <a href="{% url 'booking-detail-gui' booking.id %}" class="btn btn-sm btn-info">
-                                        <i class="fas fa-eye"></i> View Details
-                                    </a>
-                                </td>
-                            </tr>
-                            {% empty %}
-                            <tr>
-                                <td colspan="6" class="text-center">No pending refunds</td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
+<div class="container" style="padding-top: 100px;">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item">
+                <a href="{% url 'admin-dashboard' %}" class="text-decoration-none">
+                    <i class="fas fa-tachometer-alt me-1"></i>Dashboard
+                </a>
+            </li>
+            <li class="breadcrumb-item active">Pending Refunds</li>
+        </ol>
+    </nav>
+
+    <!-- Header -->
+    <div class="glass-card mb-4">
+        <div class="p-4">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h2 class="mb-1">
+                        <i class="fas fa-money-bill-wave me-2" style="color: #f59e0b;"></i>Pending Refunds
+                    </h2>
+                    <p class="text-muted mb-0">Process cancelled booking refunds</p>
+                </div>
+                <div class="text-end">
+                    <div class="refund-amount">{{ bookings|length }} Pending</div>
                 </div>
             </div>
         </div>
     </div>
+
+    <!-- Refunds List -->
+    {% if bookings %}
+        <div class="row">
+            {% for booking in bookings %}
+            <div class="col-lg-6 mb-4">
+                <div class="refund-card">
+                    <div class="p-4">
+                        <!-- Header -->
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <div>
+                                <h6 class="mb-1">{{ booking.seat.flight.code }}</h6>
+                                <small class="text-muted">Ref: {{ booking.booking_reference }}</small>
+                            </div>
+                            {% if booking.cancelled_date %}
+                                {% now "Y-m-d" as today %}
+                                {% if booking.cancelled_date|date:"Y-m-d" == today %}
+                                    <span class="urgent-badge">Today</span>
+                                {% endif %}
+                            {% endif %}
+                        </div>
+                        
+                        <!-- Route -->
+                        <div class="route-display">
+                            <div class="route-cities">
+                                <div class="city-badge">{{ booking.seat.flight.origin }}</div>
+                                <div class="flight-icon">
+                                    <i class="fas fa-plane"></i>
+                                </div>
+                                <div class="city-badge">{{ booking.seat.flight.destination }}</div>
+                            </div>
+                        </div>
+                        
+                        <!-- Details -->
+                        <div class="row g-3 mb-3">
+                            <div class="col-6">
+                                <small class="text-muted d-block">Passenger</small>
+                                <strong>{{ booking.passenger_name }}</strong>
+                            </div>
+                            <div class="col-6">
+                                <small class="text-muted d-block">Seat</small>
+                                <div class="d-flex align-items-center">
+                                    <div class="seat-visual">{{ booking.seat.seat_number }}</div>
+                                    <span>{{ booking.seat.seat_class|title }}</span>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <small class="text-muted d-block">Cancelled</small>
+                                <strong>{{ booking.cancelled_date|date:"M d, Y" }}</strong><br>
+                                <small class="text-muted">{{ booking.cancelled_date|date:"H:i" }}</small>
+                            </div>
+                            <div class="col-6">
+                                <small class="text-muted d-block">Refund Amount</small>
+                                <strong class="text-warning">${{ booking.payment_amount|floatformat:2 }}</strong>
+                            </div>
+                        </div>
+                        
+                        <!-- Actions -->
+                        <div class="d-flex gap-2">
+                            <a href="{% url 'process-refund-gui' booking.id %}" class="btn btn-warning btn-sm flex-fill" 
+                               onclick="return confirm('Process refund of ${{ booking.payment_amount }} for {{ booking.passenger_name }}?')">
+                                <i class="fas fa-money-bill-wave me-1"></i>Process Refund
+                            </a>
+                            <a href="{% url 'booking-detail-gui' booking.id %}" class="btn btn-info btn-sm flex-fill">
+                                <i class="fas fa-eye me-1"></i>View Details
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <!-- Empty State -->
+        <div class="empty-state">
+            <div class="empty-icon">
+                <i class="fas fa-check-circle"></i>
+            </div>
+            <h3 class="mb-3">All Caught Up!</h3>
+            <p class="text-muted mb-4">No pending refunds to process at this time.</p>
+            <a href="{% url 'admin-dashboard' %}" class="btn btn-primary btn-lg">
+                <i class="fas fa-tachometer-alt me-2"></i>Back to Dashboard
+            </a>
+        </div>
+    {% endif %}
 </div>
-{% endblock %}
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
