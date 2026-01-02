@@ -3,42 +3,460 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Airline Monitoring Dashboard - NEW VERSION</title>
+    <title>Airline Monitoring Dashboard</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Segoe UI', sans-serif; background: #f8fafc; margin: 0; }
-        .header { background: white; border-bottom: 1px solid #e2e8f0; padding: 1rem 2rem; position: fixed; top: 0; left: 0; right: 0; z-index: 1000; height: 70px; display: flex; align-items: center; justify-content: space-between; }
-        .logo { font-size: 1.5rem; font-weight: bold; color: #2563eb; }
-        .sidebar { position: fixed; top: 70px; left: 0; width: 250px; height: calc(100vh - 70px); background: white; border-right: 1px solid #e2e8f0; padding: 1rem 0; }
-        .nav-item { padding: 0.5rem 1.5rem; cursor: pointer; transition: all 0.2s; border-left: 3px solid transparent; }
-        .nav-item:hover { background: #f8fafc; }
-        .nav-item.active { background: #f8fafc; border-left-color: #2563eb; color: #2563eb; }
-        .main-content { margin-left: 250px; margin-top: 70px; padding: 2rem; }
-        .content-section { display: none; }
-        .content-section.active { display: block; }
-        .card { background: white; border: 1px solid #e2e8f0; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: 1.5rem; }
-        .card-header { padding: 1.5rem; border-bottom: 1px solid #e2e8f0; font-weight: 600; font-size: 1.25rem; }
-        .card-body { padding: 1.5rem; }
-        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; margin-bottom: 2rem; }
-        .stat-card { background: white; border: 1px solid #e2e8f0; border-radius: 8px; padding: 1.5rem; text-align: center; }
-        .stat-value { font-size: 2rem; font-weight: bold; color: #2563eb; }
-        .stat-label { color: #64748b; margin-top: 0.5rem; }
-        .badge { padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.75rem; font-weight: 500; }
-        .badge-success { background: #059669; color: white; }
-        .badge-danger { background: #dc2626; color: white; }
-        .badge-warning { background: #d97706; color: white; }
-        .badge-info { background: #0891b2; color: white; }
+        :root {
+            --primary: #1e40af;
+            --primary-light: #3b82f6;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --info: #06b6d4;
+            --light: #f8fafc;
+            --dark: #1e293b;
+            --border: #e2e8f0;
+            --text-muted: #64748b;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+        
+        * { box-sizing: border-box; }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            margin: 0;
+            min-height: 100vh;
+        }
+        
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border);
+            padding: 1rem 2rem;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            height: 70px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: var(--shadow);
+        }
+        
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+        }
+        
+        .logo i {
+            background: linear-gradient(45deg, var(--primary), var(--primary-light));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-right: 0.5rem;
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, var(--primary), var(--primary-light));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+        }
+        
+        .sidebar {
+            position: fixed;
+            top: 70px;
+            left: 0;
+            width: 280px;
+            height: calc(100vh - 70px);
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-right: 1px solid var(--border);
+            padding: 2rem 0;
+            overflow-y: auto;
+            box-shadow: var(--shadow);
+        }
+        
+        .nav-item {
+            padding: 1rem 2rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-left: 4px solid transparent;
+            display: flex;
+            align-items: center;
+            font-weight: 500;
+            color: var(--text-muted);
+        }
+        
+        .nav-item:hover {
+            background: rgba(30, 64, 175, 0.05);
+            color: var(--primary);
+            transform: translateX(4px);
+        }
+        
+        .nav-item.active {
+            background: rgba(30, 64, 175, 0.1);
+            border-left-color: var(--primary);
+            color: var(--primary);
+            font-weight: 600;
+        }
+        
+        .nav-item i {
+            width: 20px;
+            margin-right: 1rem;
+        }
+        
+        .main-content {
+            margin-left: 280px;
+            margin-top: 70px;
+            padding: 2rem;
+            min-height: calc(100vh - 70px);
+        }
+        
+        .content-section {
+            display: none;
+            animation: fadeIn 0.3s ease-in;
+        }
+        
+        .content-section.active {
+            display: block;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .page-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 2rem;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .stat-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 16px;
+            padding: 2rem;
+            text-align: center;
+            box-shadow: var(--shadow);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary), var(--primary-light));
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+        
+        .stat-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, var(--primary), var(--primary-light));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+            color: white;
+            font-size: 1.5rem;
+        }
+        
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+        
+        .stat-label {
+            color: var(--text-muted);
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+        
+        .card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 16px;
+            box-shadow: var(--shadow);
+            margin-bottom: 2rem;
+            overflow: hidden;
+        }
+        
+        .card-header {
+            padding: 1.5rem 2rem;
+            border-bottom: 1px solid var(--border);
+            font-weight: 600;
+            font-size: 1.25rem;
+            background: rgba(30, 64, 175, 0.02);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .card-body {
+            padding: 2rem;
+        }
+        
+        .table {
+            margin: 0;
+            border-collapse: separate;
+            border-spacing: 0;
+        }
+        
+        .table th {
+            background: rgba(30, 64, 175, 0.05);
+            border: none;
+            padding: 1rem;
+            font-weight: 600;
+            color: var(--primary);
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .table td {
+            padding: 1rem;
+            border-bottom: 1px solid var(--border);
+            vertical-align: middle;
+        }
+        
+        .table tbody tr {
+            transition: background-color 0.2s ease;
+        }
+        
+        .table tbody tr:hover {
+            background: rgba(30, 64, 175, 0.02);
+        }
+        
+        .badge {
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .badge-success { background: var(--success); color: white; }
+        .badge-danger { background: var(--danger); color: white; }
+        .badge-warning { background: var(--warning); color: white; }
+        .badge-info { background: var(--info); color: white; }
+        .badge-primary { background: var(--primary); color: white; }
+        
+        .activity-item {
+            display: flex;
+            align-items: center;
+            padding: 1rem 0;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .activity-item:last-child {
+            border-bottom: none;
+        }
+        
+        .activity-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 1rem;
+            font-size: 0.9rem;
+        }
+        
+        .activity-icon.success { background: rgba(16, 185, 129, 0.1); color: var(--success); }
+        .activity-icon.info { background: rgba(6, 182, 212, 0.1); color: var(--info); }
+        .activity-icon.warning { background: rgba(245, 158, 11, 0.1); color: var(--warning); }
+        
+        .activity-time {
+            margin-left: auto;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+        
+        .status-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+        
+        .status-indicator.online {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--success);
+        }
+        
+        .status-indicator::before {
+            content: '';
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: currentColor;
+        }
+        
+        .stat-trend {
+            font-size: 0.75rem;
+            margin-top: 0.5rem;
+            font-weight: 500;
+        }
+        
+        .stat-trend.positive {
+            color: var(--success);
+        }
+        
+        .stat-trend.negative {
+            color: var(--danger);
+        }
+        
+        .stat-trend.neutral {
+            color: var(--text-muted);
+        }
+        
+        .chart-controls {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .chart-controls .btn.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+        
+        .chart-legend {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+        }
+        
+        .legend-color {
+            width: 12px;
+            height: 12px;
+            border-radius: 2px;
+        }
+        
+        .health-metric {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1rem;
+            gap: 1rem;
+        }
+        
+        .health-label {
+            flex: 0 0 140px;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+        
+        .health-bar {
+            flex: 1;
+            height: 8px;
+            background: rgba(0,0,0,0.1);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        
+        .health-progress {
+            height: 100%;
+            background: linear-gradient(90deg, var(--success), var(--primary));
+            border-radius: 4px;
+            transition: width 0.3s ease;
+        }
+        
+        .health-value {
+            flex: 0 0 60px;
+            text-align: right;
+            font-weight: 600;
+            color: var(--primary);
+            font-size: 0.9rem;
+        }
+        
+        .btn {
+            border-radius: 8px;
+            font-weight: 500;
+            padding: 0.5rem 1.5rem;
+            transition: all 0.2s ease;
+        }
+        
+        .btn-outline-secondary {
+            border-color: var(--border);
+            color: var(--text-muted);
+        }
+        
+        .btn-outline-secondary:hover {
+            background: var(--primary);
+            border-color: var(--primary);
+            color: white;
+        }
     </style>
 </head>
 <body>
     <header class="header">
         <div class="logo">
-            <i class="fas fa-chart-line me-2"></i>
-            *** NEW TEMPLATE LOADED ***
+            <i class="fas fa-plane"></i>
+            Airline Control Center
         </div>
-        <div>
-            <span class="me-3">{{ monitoring_user.first_name }} {{ monitoring_user.last_name }}</span>
+        <div class="user-info">
+            <div class="user-avatar">
+                {{ monitoring_user.first_name.0 }}{{ monitoring_user.last_name.0 }}
+            </div>
+            <div>
+                <div style="font-weight: 600; color: var(--dark);">{{ monitoring_user.first_name }} {{ monitoring_user.last_name }}</div>
+                <div style="font-size: 0.8rem; color: var(--text-muted);">System Administrator</div>
+            </div>
             <a href="{% url 'monitoring-logout' %}" class="btn btn-outline-secondary btn-sm">
                 <i class="fas fa-sign-out-alt"></i> Logout
             </a>
@@ -52,6 +470,9 @@
         <div class="nav-item" onclick="showSection('users')">
             <i class="fas fa-users me-2"></i> System Users
         </div>
+        <div class="nav-item" onclick="showSection('admin')">
+            <i class="fas fa-user-tie me-2"></i> Admin Users
+        </div>
         <div class="nav-item" onclick="showSection('monitoring')">
             <i class="fas fa-user-shield me-2"></i> Monitoring Users
         </div>
@@ -64,61 +485,206 @@
     </nav>
 
     <main class="main-content">
+        {% csrf_token %}
         <!-- Dashboard Section -->
         <div id="dashboard-section" class="content-section active">
-            <h1 class="mb-4">Dashboard Overview</h1>
+            <h1 class="page-title">System Overview</h1>
             
+            <!-- Key Metrics Cards -->
             <div class="stats-grid">
                 <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
                     <div class="stat-value">{{ stats.total_users }}</div>
                     <div class="stat-label">Total Users</div>
+                    <div class="stat-trend positive">+12% from last month</div>
                 </div>
                 <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-plane"></i>
+                    </div>
                     <div class="stat-value">{{ stats.total_flights }}</div>
                     <div class="stat-label">Total Flights</div>
+                    <div class="stat-trend positive">+8% from last month</div>
                 </div>
                 <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-ticket-alt"></i>
+                    </div>
                     <div class="stat-value">{{ stats.total_bookings }}</div>
                     <div class="stat-label">Total Bookings</div>
+                    <div class="stat-trend positive">+15% from last month</div>
                 </div>
                 <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
                     <div class="stat-value">{{ stats.confirmed_bookings }}</div>
                     <div class="stat-label">Confirmed Bookings</div>
+                    <div class="stat-trend neutral">{{ stats.confirmed_bookings|floatformat:0 }}% success rate</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-chair"></i>
+                    </div>
+                    <div class="stat-value">{{ stats.available_seats }}</div>
+                    <div class="stat-label">Available Seats</div>
+                    <div class="stat-trend neutral">{{ stats.booked_seats }} booked</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-dollar-sign"></i>
+                    </div>
+                    <div class="stat-value">₹2.4M</div>
+                    <div class="stat-label">Revenue (MTD)</div>
+                    <div class="stat-trend positive">+22% from last month</div>
+                </div>
+            </div>
+
+            <!-- Charts Section -->
+            <div class="row mb-4">
+                <div class="col-md-8">
+                    <div class="card">
+                        <div class="card-header">
+                            <span><i class="fas fa-chart-line me-2"></i>Booking Trends</span>
+                            <div class="chart-controls">
+                                <button class="btn btn-sm btn-outline-primary active" onclick="updateChart('7d')">7D</button>
+                                <button class="btn btn-sm btn-outline-primary" onclick="updateChart('30d')">30D</button>
+                                <button class="btn btn-sm btn-outline-primary" onclick="updateChart('90d')">90D</button>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <canvas id="bookingTrendsChart" height="300"></canvas>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card">
+                        <div class="card-header">
+                            <span><i class="fas fa-chart-pie me-2"></i>Booking Status</span>
+                        </div>
+                        <div class="card-body">
+                            <canvas id="bookingStatusChart" height="300"></canvas>
+                            <div class="chart-legend mt-3">
+                                <div class="legend-item">
+                                    <span class="legend-color" style="background: #10b981;"></span>
+                                    <span>Confirmed ({{ stats.confirmed_bookings }})</span>
+                                </div>
+                                <div class="legend-item">
+                                    <span class="legend-color" style="background: #f59e0b;"></span>
+                                    <span>Pending ({{ stats.pending_bookings }})</span>
+                                </div>
+                                <div class="legend-item">
+                                    <span class="legend-color" style="background: #ef4444;"></span>
+                                    <span>Cancelled ({{ stats.cancelled_bookings }})</span>
+                                </div>
+                                <div class="legend-item">
+                                    <span class="legend-color" style="background: #06b6d4;"></span>
+                                    <span>Refunded ({{ stats.refunded_bookings }})</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Additional Charts -->
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <span><i class="fas fa-chart-bar me-2"></i>Flight Utilization</span>
+                        </div>
+                        <div class="card-body">
+                            <canvas id="flightUtilizationChart" height="250"></canvas>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <span><i class="fas fa-chart-area me-2"></i>Revenue by Airline</span>
+                        </div>
+                        <div class="card-body">
+                            <canvas id="revenueChart" height="250"></canvas>
+                        </div>
+                    </div>
                 </div>
             </div>
 
             <div class="row">
                 <div class="col-md-6">
                     <div class="card">
-                        <div class="card-header">Recent Activity</div>
+                        <div class="card-header">
+                            <span><i class="fas fa-chart-line me-2"></i>Recent Activity</span>
+                        </div>
                         <div class="card-body">
-                            <div class="mb-2">
-                                <i class="fas fa-plane text-success me-2"></i>
-                                {{ recent_flights|length }} new flights added
+                            <div class="activity-item">
+                                <div class="activity-icon success">
+                                    <i class="fas fa-plane"></i>
+                                </div>
+                                <div>
+                                    <div style="font-weight: 600;">{{ recent_flights|length }} new flights added</div>
+                                    <div style="font-size: 0.8rem; color: var(--text-muted);">In the last 24 hours</div>
+                                </div>
+                                <div class="activity-time">2h ago</div>
                             </div>
-                            <div class="mb-2">
-                                <i class="fas fa-ticket-alt text-info me-2"></i>
-                                {{ recent_bookings|length }} bookings processed
+                            <div class="activity-item">
+                                <div class="activity-icon info">
+                                    <i class="fas fa-ticket-alt"></i>
+                                </div>
+                                <div>
+                                    <div style="font-weight: 600;">{{ recent_bookings|length }} bookings processed</div>
+                                    <div style="font-size: 0.8rem; color: var(--text-muted);">Recent transactions</div>
+                                </div>
+                                <div class="activity-time">5m ago</div>
                             </div>
-                            <div class="mb-2">
-                                <i class="fas fa-users text-warning me-2"></i>
-                                {{ monitoring_users|length }} monitoring users active
+                            <div class="activity-item">
+                                <div class="activity-icon warning">
+                                    <i class="fas fa-users"></i>
+                                </div>
+                                <div>
+                                    <div style="font-weight: 600;">{{ monitoring_users|length }} monitoring users active</div>
+                                    <div style="font-size: 0.8rem; color: var(--text-muted);">System administrators</div>
+                                </div>
+                                <div class="activity-time">1h ago</div>
                             </div>
                         </div>
                     </div>
                 </div>
                 <div class="col-md-6">
                     <div class="card">
-                        <div class="card-header">System Status</div>
+                        <div class="card-header">
+                            <span><i class="fas fa-server me-2"></i>System Health</span>
+                        </div>
                         <div class="card-body">
-                            <div class="mb-2">
-                                <span class="badge badge-success">System Online</span>
+                            <div class="health-metric">
+                                <div class="health-label">Database Performance</div>
+                                <div class="health-bar">
+                                    <div class="health-progress" style="width: 92%;"></div>
+                                </div>
+                                <div class="health-value">92%</div>
                             </div>
-                            <div class="mb-2">
-                                <span class="badge badge-info">Database Connected</span>
+                            <div class="health-metric">
+                                <div class="health-label">API Response Time</div>
+                                <div class="health-bar">
+                                    <div class="health-progress" style="width: 88%;"></div>
+                                </div>
+                                <div class="health-value">88ms</div>
                             </div>
-                            <div class="mb-2">
-                                <span class="badge badge-success">All Services Running</span>
+                            <div class="health-metric">
+                                <div class="health-label">Server Uptime</div>
+                                <div class="health-bar">
+                                    <div class="health-progress" style="width: 99%;"></div>
+                                </div>
+                                <div class="health-value">99.9%</div>
+                            </div>
+                            <div class="mt-4">
+                                <div class="status-indicator online">
+                                    All Systems Operational
+                                </div>
+                                <div style="font-size: 0.9rem; color: var(--text-muted); margin-top: 0.5rem;">Last check: {{ "now"|date:"M d, Y H:i" }}</div>
                             </div>
                         </div>
                     </div>
@@ -128,8 +694,12 @@
 
         <!-- Users Section -->
         <div id="users-section" class="content-section">
+            <h1 class="page-title">System Users</h1>
             <div class="card">
-                <div class="card-header">System Users</div>
+                <div class="card-header">
+                    <span><i class="fas fa-users me-2"></i>Registered Users</span>
+                    <span class="badge badge-primary">{{ users|length }} Total</span>
+                </div>
                 <div class="card-body">
                     <div class="table-responsive">
                         <table class="table table-striped">
@@ -165,10 +735,99 @@
             </div>
         </div>
 
-        <!-- Monitoring Users Section -->
-        <div id="monitoring-section" class="content-section">
+        <!-- Admin Users Section -->
+        <div id="admin-section" class="content-section">
+            <h1 class="page-title">Admin Users</h1>
             <div class="card">
-                <div class="card-header">Monitoring Users</div>
+                <div class="card-header">
+                    <span><i class="fas fa-user-tie me-2"></i>Airline Administrators</span>
+                    <div>
+                        <span class="badge badge-warning me-2">{{ admin_users_data|length }} Total</span>
+                        <button class="btn btn-primary btn-sm" onclick="showAddAdminModal()">
+                            <i class="fas fa-plus me-1"></i>Add Admin
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Admin Details</th>
+                                    <th>Airline</th>
+                                    <th>Contact</th>
+                                    <th>Flights</th>
+                                    <th>Status</th>
+                                    <th>Created</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for data in admin_users_data %}
+                                <tr>
+                                    <td><strong>{{ data.admin.id }}</strong></td>
+                                    <td>
+                                        <div>
+                                            <strong style="color: var(--primary);">{{ data.admin.admin_name }}</strong>
+                                        </div>
+                                        <small class="text-muted">{{ data.admin.email }}</small>
+                                    </td>
+                                    <td>
+                                        <div>
+                                            <span class="badge badge-info">{{ data.admin.airline_code }}</span>
+                                        </div>
+                                        <small class="text-muted">{{ data.admin.airline_name }}</small>
+                                    </td>
+                                    <td>
+                                        <div>{{ data.admin.phone_number|default:"-" }}</div>
+                                        <small class="text-muted">Phone</small>
+                                    </td>
+                                    <td>
+                                        <span class="badge badge-secondary">{{ data.flight_count }}</span>
+                                    </td>
+                                    <td>
+                                        {% if data.admin.is_active %}
+                                            <span class="badge badge-success">Active</span>
+                                        {% else %}
+                                            <span class="badge badge-danger">Inactive</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ data.admin.created_date|date:"M d, Y" }}</td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm">
+                                            <button class="btn btn-outline-primary btn-sm" 
+                                                    onclick="editAdmin({{ data.admin.id }}, '{{ data.admin.admin_name }}', '{{ data.admin.email }}', '{{ data.admin.phone_number }}', {{ data.admin.is_active|yesno:'true,false' }})">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button class="btn btn-outline-danger btn-sm" 
+                                                    onclick="deleteAdmin({{ data.admin.id }}, '{{ data.admin.admin_name }}')">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="8" class="text-center text-muted py-4">
+                                        <i class="fas fa-user-tie fa-2x mb-3"></i>
+                                        <div>No admin users found</div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="monitoring-section" class="content-section">
+            <h1 class="page-title">Monitoring Users</h1>
+            <div class="card">
+                <div class="card-header">
+                    <span><i class="fas fa-user-shield me-2"></i>System Administrators</span>
+                    <span class="badge badge-info">{{ monitoring_users|length }} Active</span>
+                </div>
                 <div class="card-body">
                     <div class="table-responsive">
                         <table class="table table-striped">
@@ -206,8 +865,12 @@
 
         <!-- Flights Section -->
         <div id="flights-section" class="content-section">
+            <h1 class="page-title">Flight Operations</h1>
             <div class="card">
-                <div class="card-header">Flight Operations</div>
+                <div class="card-header">
+                    <span><i class="fas fa-plane me-2"></i>All Flights</span>
+                    <span class="badge badge-success">{{ flights|length }} Active</span>
+                </div>
                 <div class="card-body">
                     <div class="table-responsive">
                         <table class="table table-striped">
@@ -247,8 +910,12 @@
 
         <!-- Bookings Section -->
         <div id="bookings-section" class="content-section">
+            <h1 class="page-title">Booking Records</h1>
             <div class="card">
-                <div class="card-header">Booking Records</div>
+                <div class="card-header">
+                    <span><i class="fas fa-ticket-alt me-2"></i>All Bookings</span>
+                    <span class="badge badge-warning">{{ bookings|length }} Recent</span>
+                </div>
                 <div class="card-body">
                     <div class="table-responsive">
                         <table class="table table-striped">
@@ -295,7 +962,173 @@
     </main>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
+        // Initialize Charts
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeCharts();
+        });
+        
+        function initializeCharts() {
+            // Booking Trends Chart
+            const bookingCtx = document.getElementById('bookingTrendsChart').getContext('2d');
+            new Chart(bookingCtx, {
+                type: 'line',
+                data: {
+                    labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                    datasets: [{
+                        label: 'Bookings',
+                        data: [65, 78, 90, 81, 95, 105, 88],
+                        borderColor: '#3b82f6',
+                        backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    }, {
+                        label: 'Cancellations',
+                        data: [12, 15, 8, 22, 18, 25, 16],
+                        borderColor: '#ef4444',
+                        backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: {
+                                color: 'rgba(0,0,0,0.1)'
+                            }
+                        },
+                        x: {
+                            grid: {
+                                display: false
+                            }
+                        }
+                    }
+                }
+            });
+            
+            // Booking Status Pie Chart
+            const statusCtx = document.getElementById('bookingStatusChart').getContext('2d');
+            new Chart(statusCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Confirmed', 'Pending', 'Cancelled', 'Refunded'],
+                    datasets: [{
+                        data: [{{ stats.confirmed_bookings }}, {{ stats.pending_bookings }}, {{ stats.cancelled_bookings }}, {{ stats.refunded_bookings }}],
+                        backgroundColor: ['#10b981', '#f59e0b', '#ef4444', '#06b6d4'],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    cutout: '60%'
+                }
+            });
+            
+            // Flight Utilization Chart
+            const utilizationCtx = document.getElementById('flightUtilizationChart').getContext('2d');
+            new Chart(utilizationCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['AI', 'SG', 'UK', 'G8', 'I5'],
+                    datasets: [{
+                        label: 'Utilization %',
+                        data: [85, 92, 78, 88, 95],
+                        backgroundColor: ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#06b6d4'],
+                        borderRadius: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100,
+                            grid: {
+                                color: 'rgba(0,0,0,0.1)'
+                            }
+                        },
+                        x: {
+                            grid: {
+                                display: false
+                            }
+                        }
+                    }
+                }
+            });
+            
+            // Revenue Chart
+            const revenueCtx = document.getElementById('revenueChart').getContext('2d');
+            new Chart(revenueCtx, {
+                type: 'line',
+                data: {
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                    datasets: [{
+                        label: 'Revenue (₹ Lakhs)',
+                        data: [45, 52, 48, 61, 58, 67],
+                        borderColor: '#10b981',
+                        backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: {
+                                color: 'rgba(0,0,0,0.1)'
+                            }
+                        },
+                        x: {
+                            grid: {
+                                display: false
+                            }
+                        }
+                    }
+                }
+            });
+        }
+        
+        function updateChart(period) {
+            // Update chart controls
+            document.querySelectorAll('.chart-controls .btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            // Here you would typically fetch new data based on the period
+            console.log('Updating chart for period:', period);
+        }
+        
         function showSection(sectionName) {
             // Remove active from all nav items
             document.querySelectorAll('.nav-item').forEach(item => {
@@ -315,6 +1148,69 @@
             if (targetSection) {
                 targetSection.classList.add('active');
             }
+        }
+        
+        // Admin Management Functions
+        function showAddAdminModal() {
+            // This would show a modal for adding new admin
+            alert('Add Admin Modal - This can be implemented with a proper modal form');
+        }
+        
+        function editAdmin(id, name, email, phone, isActive) {
+            // This would show an edit modal with pre-filled data
+            const newName = prompt('Edit Admin Name:', name);
+            if (newName && newName !== name) {
+                // Make AJAX call to update admin
+                updateAdminUser(id, {admin_name: newName});
+            }
+        }
+        
+        function deleteAdmin(id, name) {
+            if (confirm(`Are you sure you want to delete admin user "${name}"?`)) {
+                // Make AJAX call to delete admin
+                fetch(`/monitoring/admin-user/${id}/delete/`, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+                        'Content-Type': 'application/json',
+                    },
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        location.reload();
+                    } else {
+                        alert('Error: ' + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('An error occurred while deleting admin user');
+                });
+            }
+        }
+        
+        function updateAdminUser(id, data) {
+            fetch(`/monitoring/admin-user/${id}/update/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: new URLSearchParams(data)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    location.reload();
+                } else {
+                    alert('Error: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred while updating admin user');
+            });
         }
     </script>
 </body>

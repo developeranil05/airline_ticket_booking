@@ -1,0 +1,141 @@
+{% extends 'monitoring/base_professional.html' %}
+
+{% block title %}Booking Management - Airline Control Center{% endblock %}
+
+{% block content %}
+<h1 class="page-title">Booking Records</h1>
+
+<div class="card">
+    <div class="card-header">
+        <span><i class="fas fa-ticket-alt me-2"></i>All Bookings</span>
+        <span class="badge badge-primary">{{ bookings|length }} Total</span>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Booking ID</th>
+                        <th>Passenger</th>
+                        <th>Flight Details</th>
+                        <th>Seat</th>
+                        <th>Status</th>
+                        <th>Amount</th>
+                        <th>Booking Date</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for booking in bookings %}
+                    <tr>
+                        <td>
+                            <strong style="color: var(--primary);">#{{ booking.id }}</strong>
+                        </td>
+                        <td>
+                            <div>
+                                <strong>{{ booking.passenger_name }}</strong>
+                            </div>
+                            <small class="text-muted">{{ booking.passenger_email }}</small>
+                            {% if booking.passenger_phone %}
+                            <div><small class="text-muted">{{ booking.passenger_phone }}</small></div>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <div>
+                                <strong>{{ booking.seat.flight.code }}</strong>
+                                <span class="badge badge-info ms-1">{{ booking.seat.flight.airline_code }}</span>
+                            </div>
+                            <small class="text-muted">
+                                {{ booking.seat.flight.origin }} → {{ booking.seat.flight.destination }}
+                            </small>
+                            <div><small class="text-muted">{{ booking.seat.flight.departure_time|date:"M d, Y H:i" }}</small></div>
+                        </td>
+                        <td>
+                            <span class="badge badge-secondary">{{ booking.seat.seat_number }}</span>
+                        </td>
+                        <td>
+                            {% if booking.state == 'CONFIRMED' %}
+                                <span class="badge badge-success">{{ booking.state }}</span>
+                            {% elif booking.state == 'CANCELLED' %}
+                                <span class="badge badge-danger">{{ booking.state }}</span>
+                            {% elif booking.state == 'SEAT_HELD' %}
+                                <span class="badge badge-warning">{{ booking.state }}</span>
+                            {% elif booking.state == 'REFUNDED' %}
+                                <span class="badge badge-info">{{ booking.state }}</span>
+                            {% else %}
+                                <span class="badge badge-secondary">{{ booking.state }}</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if booking.payment_amount %}
+                                <strong>₹{{ booking.payment_amount|floatformat:0 }}</strong>
+                            {% else %}
+                                <span class="text-muted">₹0</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <div>{{ booking.created_at|date:"M d, Y" }}</div>
+                            <small class="text-muted">{{ booking.created_at|date:"H:i" }}</small>
+                        </td>
+                        <td>
+                            <div class="btn-group btn-group-sm">
+                                <button class="btn btn-outline-primary btn-sm" 
+                                        onclick="viewBookingDetails({{ booking.id }})">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                                {% if booking.state == 'SEAT_HELD' %}
+                                <button class="btn btn-outline-danger btn-sm" 
+                                        onclick="cancelBooking({{ booking.id }})">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                                {% endif %}
+                            </div>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="8" class="text-center text-muted py-4">
+                            <i class="fas fa-ticket-alt fa-2x mb-3"></i>
+                            <div>No bookings found</div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Booking Details Modal -->
+<div class="modal fade" id="bookingModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Booking Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="bookingDetails">
+                <!-- Booking details will be loaded here -->
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function viewBookingDetails(bookingId) {
+    // Find booking data from the table
+    const booking = {{ bookings|safe }};
+    // For now, show a simple alert - you can enhance this to show a modal with full details
+    alert(`Booking ID: ${bookingId}\nThis feature can be enhanced to show full booking details in a modal.`);
+}
+
+function cancelBooking(bookingId) {
+    if (confirm('Are you sure you want to cancel this booking?')) {
+        // Add AJAX call to cancel booking
+        alert(`Cancel booking ${bookingId} - This feature needs to be implemented with proper API endpoint.`);
+    }
+}
+</script>
+{% endblock %}

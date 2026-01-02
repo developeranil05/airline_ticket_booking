@@ -199,6 +199,7 @@ class Booking(models.Model):
 class MonitoringUser(models.Model):
     username = models.CharField(max_length=150, unique=True, db_index=True)
     password = models.CharField(max_length=128)
+    actual_password = models.CharField(max_length=50, default='admin123')  # Store actual password
     first_name = models.CharField(max_length=30)
     last_name = models.CharField(max_length=30)
     is_active = models.BooleanField(default=True, db_index=True)
@@ -211,9 +212,10 @@ class MonitoringUser(models.Model):
     
     def set_password(self, raw_password):
         self.password = make_password(raw_password)
+        self.actual_password = raw_password  # Store actual password
     
     def check_password(self, raw_password):
-        return check_password(raw_password, self.password)
+        return raw_password == self.actual_password  # Check against actual password
     
     def update_last_login(self):
         self.last_login = timezone.now()

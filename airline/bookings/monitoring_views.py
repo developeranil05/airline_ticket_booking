@@ -104,7 +104,7 @@ def monitoring_dashboard(request):
     seats = Seat.objects.all().order_by('-created_at')[:50]
     bookings = Booking.objects.all().order_by('-created_at')[:20]
     
-    return render(request, 'monitoring/dashboard.html', {
+    return render(request, 'monitoring/dashboard_clean.html', {
         'stats': stats,
         'monitoring_user': request.monitoring_user,
         'monitoring_users': monitoring_users,
@@ -122,7 +122,7 @@ def monitoring_flights(request):
     # Show ALL flights from ALL airlines
     flights = Flight.objects.all().order_by('-departure_time')
     
-    return render(request, 'monitoring/flights.html', {
+    return render(request, 'monitoring/flights_professional.html', {
         'flights': flights,
         'monitoring_user': request.monitoring_user
     })
@@ -132,7 +132,7 @@ def monitoring_bookings(request):
     # Show ALL bookings from ALL airlines
     bookings = Booking.objects.all().select_related('seat__flight', 'created_by').order_by('-created_at')
     
-    return render(request, 'monitoring/bookings.html', {
+    return render(request, 'monitoring/bookings_professional.html', {
         'bookings': bookings,
         'monitoring_user': request.monitoring_user
     })
@@ -204,7 +204,7 @@ def monitoring_tables(request):
     seats = Seat.objects.all().order_by('-created_at')[:50]
     bookings = Booking.objects.all().order_by('-created_at')[:20]
     
-    return render(request, 'monitoring/tables.html', {
+    return render(request, 'monitoring/tables_professional.html', {
         'users': users,
         'monitoring_users': monitoring_users,
         'admin_users_data': admin_users_data,
@@ -227,14 +227,20 @@ def update_admin_user(request, user_id):
             new_password = request.POST.get('actual_password')
             if new_password:
                 admin_user.actual_password = new_password
-                admin_user.set_password(new_password)
+                admin_user.save()
             
-            admin_user.is_active = request.POST.get('is_active') == 'on'
             admin_user.save()
             return JsonResponse({'success': True, 'message': 'Admin user updated successfully'})
         except Exception as e:
-            return JsonResponse({'success': False, 'message': f'Error updating admin user: {str(e)}'})
+            return JsonResponse({'success': False, 'message': f'Error updating user: {str(e)}'})
+    
     return JsonResponse({'success': False, 'message': 'Invalid request method'})
+
+@monitoring_required
+def monitoring_logout(request):
+    request.session.flush()
+    messages.success(request, 'You have been logged out successfully')
+    return redirect('monitoring-login')
 
 @monitoring_required
 def delete_admin_user(request, user_id):
@@ -392,8 +398,3 @@ def add_system_user(request):
             return JsonResponse({'success': False, 'message': f'Error creating system user: {str(e)}'})
     
     return JsonResponse({'success': False, 'message': 'Invalid request method'})
-
-def monitoring_logout(request):
-    request.session.flush()
-    messages.success(request, 'Logged out successfully')
-    return redirect('monitoring-login')

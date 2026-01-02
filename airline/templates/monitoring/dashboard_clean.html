@@ -1,0 +1,1385 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Airline Control Center</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f8fafc;
+            color: #334155;
+        }
+        
+        .header {
+            background: white;
+            border-bottom: 1px solid #e2e8f0;
+            padding: 1rem 2rem;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            height: 70px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #1e40af;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #1e40af, #3b82f6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+        
+        .sidebar {
+            position: fixed;
+            top: 70px;
+            left: 0;
+            width: 260px;
+            height: calc(100vh - 70px);
+            background: white;
+            border-right: 1px solid #e2e8f0;
+            padding: 1.5rem 0;
+            overflow-y: auto;
+        }
+        
+        .nav-item {
+            padding: 0.75rem 1.5rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border-left: 3px solid transparent;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-weight: 500;
+            color: #64748b;
+        }
+        
+        .nav-item:hover {
+            background: #f1f5f9;
+            color: #1e40af;
+        }
+        
+        .nav-item.active {
+            background: #eff6ff;
+            border-left-color: #1e40af;
+            color: #1e40af;
+            font-weight: 600;
+        }
+        
+        .main-content {
+            margin-left: 260px;
+            margin-top: 70px;
+            padding: 2rem;
+            min-height: calc(100vh - 70px);
+        }
+        
+        .page-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 2rem;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .stat-card {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        
+        .stat-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+        }
+        
+        .stat-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            color: white;
+        }
+        
+        .stat-icon.users { background: linear-gradient(45deg, #3b82f6, #1d4ed8); }
+        .stat-icon.flights { background: linear-gradient(45deg, #10b981, #059669); }
+        .stat-icon.bookings { background: linear-gradient(45deg, #f59e0b, #d97706); }
+        .stat-icon.revenue { background: linear-gradient(45deg, #8b5cf6, #7c3aed); }
+        
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 0.25rem;
+        }
+        
+        .stat-label {
+            color: #64748b;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+        
+        .stat-trend {
+            font-size: 0.8rem;
+            font-weight: 500;
+            margin-top: 0.5rem;
+        }
+        
+        .trend-up { color: #10b981; }
+        .trend-down { color: #ef4444; }
+        .trend-neutral { color: #64748b; }
+        
+        .card {
+            background: white;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            margin-bottom: 1.5rem;
+        }
+        
+        .card-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid #e2e8f0;
+            font-weight: 600;
+            font-size: 1.1rem;
+            color: #1e293b;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .card-body {
+            padding: 1.5rem;
+        }
+        
+        .activity-item {
+            display: flex;
+            align-items: center;
+            padding: 1rem 0;
+            border-bottom: 1px solid #f1f5f9;
+        }
+        
+        .activity-item:last-child {
+            border-bottom: none;
+        }
+        
+        .activity-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 1rem;
+            font-size: 0.9rem;
+        }
+        
+        .activity-icon.success { background: #dcfce7; color: #16a34a; }
+        .activity-icon.info { background: #dbeafe; color: #2563eb; }
+        .activity-icon.warning { background: #fef3c7; color: #d97706; }
+        
+        .activity-content {
+            flex: 1;
+        }
+        
+        .activity-title {
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 0.25rem;
+        }
+        
+        .activity-desc {
+            font-size: 0.85rem;
+            color: #64748b;
+        }
+        
+        .activity-time {
+            font-size: 0.8rem;
+            color: #94a3b8;
+        }
+        
+        .status-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            margin-bottom: 0.75rem;
+        }
+        
+        .status-online {
+            background: #dcfce7;
+            color: #16a34a;
+        }
+        
+        .status-indicator::before {
+            content: '';
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: currentColor;
+        }
+        
+        .btn {
+            border-radius: 8px;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            transition: all 0.2s ease;
+        }
+        
+        .btn-outline-secondary {
+            border-color: #e2e8f0;
+            color: #64748b;
+        }
+        
+        .btn-outline-secondary:hover {
+            background: #1e40af;
+            border-color: #1e40af;
+            color: white;
+        }
+        
+        .table {
+            margin: 0;
+            border-collapse: separate;
+            border-spacing: 0;
+        }
+        
+        .table th {
+            background: #f8fafc;
+            border: none;
+            padding: 1rem;
+            font-weight: 600;
+            color: #1e40af;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 2px solid #e2e8f0;
+        }
+        
+        .table td {
+            padding: 1rem;
+            border-bottom: 1px solid #f1f5f9;
+            vertical-align: middle;
+        }
+        
+        .table tbody tr {
+            transition: background-color 0.2s ease;
+        }
+        
+        .table tbody tr:hover {
+            background: #f8fafc;
+        }
+        
+        .badge {
+            padding: 0.4rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .content-section {
+            animation: fadeIn 0.3s ease-in;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .chart-container {
+            height: 300px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #f8fafc;
+            border-radius: 8px;
+            color: #64748b;
+            font-style: italic;
+        }
+        
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+            
+            .main-content {
+                margin-left: 0;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="logo">
+            <i class="fas fa-plane"></i>
+            Airline Control Center
+        </div>
+        <div class="user-info">
+            <div class="user-avatar">
+                {{ monitoring_user.first_name.0|default:"A" }}{{ monitoring_user.last_name.0|default:"U" }}
+            </div>
+            <div>
+                <div style="font-weight: 600;">{{ monitoring_user.first_name|default:"Admin" }} {{ monitoring_user.last_name|default:"User" }}</div>
+                <div style="font-size: 0.8rem; color: #64748b;">System Administrator</div>
+            </div>
+            <a href="{% url 'monitoring-logout' %}" class="btn btn-outline-secondary btn-sm">
+                <i class="fas fa-sign-out-alt"></i> Logout
+            </a>
+        </div>
+    </header>
+
+    <nav class="sidebar">
+        <div class="nav-item active" onclick="showSection('dashboard')">
+            <i class="fas fa-tachometer-alt"></i>
+            <span>Dashboard</span>
+        </div>
+        <div class="nav-item" onclick="showSection('users')">
+            <i class="fas fa-users"></i>
+            <span>System Users</span>
+        </div>
+        <div class="nav-item" onclick="showSection('admin')">
+            <i class="fas fa-user-tie"></i>
+            <span>Admin Users</span>
+        </div>
+        <div class="nav-item" onclick="showSection('monitoring')">
+            <i class="fas fa-user-shield"></i>
+            <span>Monitoring Users</span>
+        </div>
+        <div class="nav-item" onclick="showSection('flights')">
+            <i class="fas fa-plane"></i>
+            <span>Flights</span>
+        </div>
+        <div class="nav-item" onclick="showSection('bookings')">
+            <i class="fas fa-ticket-alt"></i>
+            <span>Bookings</span>
+        </div>
+    </nav>
+
+    <main class="main-content">
+        <!-- Dashboard Section -->
+        <div id="dashboard-section" class="content-section active">
+            <h1 class="page-title">System Overview</h1>
+            
+            <!-- Key Metrics -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div class="stat-icon users">
+                            <i class="fas fa-users"></i>
+                        </div>
+                    </div>
+                    <div class="stat-value">{{ stats.total_users|default:"0" }}</div>
+                    <div class="stat-label">Total Users</div>
+                    <div class="stat-trend trend-up">
+                        <i class="fas fa-arrow-up"></i> +12% from last month
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div class="stat-icon flights">
+                            <i class="fas fa-plane"></i>
+                        </div>
+                    </div>
+                    <div class="stat-value">{{ stats.total_flights|default:"0" }}</div>
+                    <div class="stat-label">Total Flights</div>
+                    <div class="stat-trend trend-up">
+                        <i class="fas fa-arrow-up"></i> +8% from last month
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div class="stat-icon bookings">
+                            <i class="fas fa-ticket-alt"></i>
+                        </div>
+                    </div>
+                    <div class="stat-value">{{ stats.total_bookings|default:"0" }}</div>
+                    <div class="stat-label">Total Bookings</div>
+                    <div class="stat-trend trend-up">
+                        <i class="fas fa-arrow-up"></i> +15% from last month
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div class="stat-icon revenue">
+                            <i class="fas fa-dollar-sign"></i>
+                        </div>
+                    </div>
+                    <div class="stat-value">₹2.4M</div>
+                    <div class="stat-label">Revenue (MTD)</div>
+                    <div class="stat-trend trend-up">
+                        <i class="fas fa-arrow-up"></i> +22% from last month
+                    </div>
+                </div>
+            </div>
+
+            <!-- Activity & Status -->
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <i class="fas fa-chart-line"></i>
+                            Recent Activity
+                        </div>
+                        <div class="card-body">
+                            <div class="activity-item">
+                                <div class="activity-icon success">
+                                    <i class="fas fa-plane"></i>
+                                </div>
+                                <div class="activity-content">
+                                    <div class="activity-title">{{ recent_flights|length|default:"5" }} new flights added</div>
+                                    <div class="activity-desc">Flight schedules updated</div>
+                                </div>
+                                <div class="activity-time">2h ago</div>
+                            </div>
+                            
+                            <div class="activity-item">
+                                <div class="activity-icon info">
+                                    <i class="fas fa-ticket-alt"></i>
+                                </div>
+                                <div class="activity-content">
+                                    <div class="activity-title">{{ recent_bookings|length|default:"20" }} bookings processed</div>
+                                    <div class="activity-desc">Payment confirmations received</div>
+                                </div>
+                                <div class="activity-time">15m ago</div>
+                            </div>
+                            
+                            <div class="activity-item">
+                                <div class="activity-icon warning">
+                                    <i class="fas fa-users"></i>
+                                </div>
+                                <div class="activity-content">
+                                    <div class="activity-title">{{ monitoring_users|length|default:"3" }} monitoring users active</div>
+                                    <div class="activity-desc">System administrators online</div>
+                                </div>
+                                <div class="activity-time">1h ago</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <i class="fas fa-server"></i>
+                            System Status
+                        </div>
+                        <div class="card-body">
+                            <div class="status-indicator status-online">
+                                All Systems Operational
+                            </div>
+                            
+                            <div style="margin-bottom: 1rem;">
+                                <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                                    <span style="font-size: 0.9rem; color: #64748b;">Database Performance</span>
+                                    <span style="font-size: 0.9rem; font-weight: 600; color: #16a34a;">98%</span>
+                                </div>
+                                <div style="height: 6px; background: #f1f5f9; border-radius: 3px; overflow: hidden;">
+                                    <div style="height: 100%; width: 98%; background: linear-gradient(90deg, #16a34a, #10b981); border-radius: 3px;"></div>
+                                </div>
+                            </div>
+                            
+                            <div style="margin-bottom: 1rem;">
+                                <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                                    <span style="font-size: 0.9rem; color: #64748b;">Server Uptime</span>
+                                    <span style="font-size: 0.9rem; font-weight: 600; color: #16a34a;">99.9%</span>
+                                </div>
+                                <div style="height: 6px; background: #f1f5f9; border-radius: 3px; overflow: hidden;">
+                                    <div style="height: 100%; width: 99%; background: linear-gradient(90deg, #16a34a, #10b981); border-radius: 3px;"></div>
+                                </div>
+                            </div>
+                            
+                            <div style="font-size: 0.85rem; color: #64748b; margin-top: 1rem;">
+                                Last check: {{ "now"|date:"M d, Y H:i" }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Other sections would go here -->
+        <div id="users-section" class="content-section" style="display: none;">
+            <h1 class="page-title">System Users</h1>
+            <div class="card">
+                <div class="card-header">
+                    <i class="fas fa-users"></i>
+                    Registered Users
+                    <span class="badge" style="background: #3b82f6; color: white; margin-left: auto;">{{ users|length }} Total</span>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Username</th>
+                                    <th>Name</th>
+                                    <th>Email</th>
+                                    <th>Status</th>
+                                    <th>Joined</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for user in users %}
+                                <tr>
+                                    <td><strong>{{ user.id }}</strong></td>
+                                    <td><strong style="color: #1e40af;">{{ user.username }}</strong></td>
+                                    <td>{{ user.first_name }} {{ user.last_name }}</td>
+                                    <td>{{ user.email|default:"-" }}</td>
+                                    <td>
+                                        {% if user.is_active %}
+                                            <span class="badge" style="background: #10b981; color: white;">Active</span>
+                                        {% else %}
+                                            <span class="badge" style="background: #ef4444; color: white;">Inactive</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ user.date_joined|date:"M d, Y" }}</td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm">
+                                            <button class="btn btn-outline-primary btn-sm" onclick="editUser({{ user.id }}, '{{ user.username }}', '{{ user.first_name }}', '{{ user.last_name }}', '{{ user.email }}', {{ user.is_active|yesno:'true,false' }})">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button class="btn btn-outline-danger btn-sm" onclick="deleteUser({{ user.id }}, '{{ user.username }}')">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="7" class="text-center" style="padding: 2rem; color: #64748b;">
+                                        <i class="fas fa-users fa-2x mb-3"></i>
+                                        <div>No users found</div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="admin-section" class="content-section" style="display: none;">
+            <h1 class="page-title">Admin Users</h1>
+            <div class="card">
+                <div class="card-header">
+                    <i class="fas fa-user-tie"></i>
+                    Airline Administrators
+                    <div style="margin-left: auto; display: flex; gap: 1rem; align-items: center;">
+                        <span class="badge" style="background: #f59e0b; color: white;">{{ admin_users_data|length }} Total</span>
+                        <button class="btn btn-primary btn-sm" onclick="showAddAdminModal()">
+                            <i class="fas fa-plus"></i> Add Admin
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Admin Name</th>
+                                    <th>Airline</th>
+                                    <th>Email</th>
+                                    <th>Phone</th>
+                                    <th>Flights</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for data in admin_users_data %}
+                                <tr>
+                                    <td><strong>{{ data.admin.id }}</strong></td>
+                                    <td><strong style="color: #1e40af;">{{ data.admin.admin_name }}</strong></td>
+                                    <td>
+                                        <span class="badge" style="background: #06b6d4; color: white;">{{ data.admin.airline_code }}</span>
+                                        <div style="font-size: 0.8rem; color: #64748b;">{{ data.admin.airline_name }}</div>
+                                    </td>
+                                    <td>{{ data.admin.email }}</td>
+                                    <td>{{ data.admin.phone_number|default:"-" }}</td>
+                                    <td><span class="badge" style="background: #64748b; color: white;">{{ data.flight_count }}</span></td>
+                                    <td>
+                                        {% if data.admin.is_active %}
+                                            <span class="badge" style="background: #10b981; color: white;">Active</span>
+                                        {% else %}
+                                            <span class="badge" style="background: #ef4444; color: white;">Inactive</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm">
+                                            <button class="btn btn-outline-primary btn-sm" onclick="editAdmin({{ data.admin.id }}, '{{ data.admin.admin_name }}', '{{ data.admin.email }}', '{{ data.admin.phone_number }}', {{ data.admin.is_active|yesno:'true,false' }})">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button class="btn btn-outline-danger btn-sm" onclick="deleteAdmin({{ data.admin.id }}, '{{ data.admin.admin_name }}')">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="8" class="text-center" style="padding: 2rem; color: #64748b;">
+                                        <i class="fas fa-user-tie fa-2x mb-3"></i>
+                                        <div>No admin users found</div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="monitoring-section" class="content-section" style="display: none;">
+            <h1 class="page-title">Monitoring Users</h1>
+            <div class="card">
+                <div class="card-header">
+                    <i class="fas fa-user-shield"></i>
+                    System Administrators
+                    <div style="margin-left: auto; display: flex; gap: 1rem; align-items: center;">
+                        <span class="badge" style="background: #8b5cf6; color: white;">{{ monitoring_users|length }} Total</span>
+                        <button class="btn btn-primary btn-sm" onclick="showAddMonitoringModal()">
+                            <i class="fas fa-plus"></i> Add Monitoring User
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Username</th>
+                                    <th>Name</th>
+                                    <th>Status</th>
+                                    <th>Created</th>
+                                    <th>Last Login</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for user in monitoring_users %}
+                                <tr>
+                                    <td><strong>{{ user.id }}</strong></td>
+                                    <td><strong style="color: #1e40af;">{{ user.username }}</strong></td>
+                                    <td>{{ user.first_name }} {{ user.last_name }}</td>
+                                    <td>
+                                        {% if user.is_active %}
+                                            <span class="badge" style="background: #10b981; color: white;">Active</span>
+                                        {% else %}
+                                            <span class="badge" style="background: #ef4444; color: white;">Inactive</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ user.created_date|date:"M d, Y" }}</td>
+                                    <td>{{ user.last_login|date:"M d, Y"|default:"Never" }}</td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm">
+                                            <button class="btn btn-outline-primary btn-sm" onclick="editMonitoring({{ user.id }}, '{{ user.username }}', '{{ user.first_name }}', '{{ user.last_name }}', {{ user.is_active|yesno:'true,false' }})">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button class="btn btn-outline-danger btn-sm" onclick="deleteMonitoring({{ user.id }}, '{{ user.username }}')">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="7" class="text-center" style="padding: 2rem; color: #64748b;">
+                                        <i class="fas fa-user-shield fa-2x mb-3"></i>
+                                        <div>No monitoring users found</div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="flights-section" class="content-section" style="display: none;">
+            <h1 class="page-title">Flight Operations</h1>
+            <div class="card">
+                <div class="card-header">
+                    <i class="fas fa-plane"></i>
+                    All Flights
+                    <span class="badge" style="background: #10b981; color: white; margin-left: auto;">{{ flights|length }} Total</span>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Flight Code</th>
+                                    <th>Airline</th>
+                                    <th>Route</th>
+                                    <th>Departure</th>
+                                    <th>Price</th>
+                                    <th>Seats</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for flight in flights %}
+                                <tr>
+                                    <td><strong style="color: #1e40af;">{{ flight.code }}</strong></td>
+                                    <td><span class="badge" style="background: #06b6d4; color: white;">{{ flight.airline_code }}</span></td>
+                                    <td>
+                                        <strong>{{ flight.origin }}</strong> 
+                                        <i class="fas fa-arrow-right mx-2" style="color: #64748b;"></i> 
+                                        <strong>{{ flight.destination }}</strong>
+                                    </td>
+                                    <td>
+                                        <div>{{ flight.departure_time|date:"M d, Y" }}</div>
+                                        <small style="color: #64748b;">{{ flight.departure_time|date:"H:i" }}</small>
+                                    </td>
+                                    <td><strong>₹{{ flight.price|floatformat:0 }}</strong></td>
+                                    <td><span class="badge" style="background: #64748b; color: white;">{{ flight.total_seats }}</span></td>
+                                    <td>
+                                        {% if flight.is_active %}
+                                            <span class="badge" style="background: #10b981; color: white;">Active</span>
+                                        {% else %}
+                                            <span class="badge" style="background: #ef4444; color: white;">Inactive</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="7" class="text-center" style="padding: 2rem; color: #64748b;">
+                                        <i class="fas fa-plane fa-2x mb-3"></i>
+                                        <div>No flights found</div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="bookings-section" class="content-section" style="display: none;">
+            <h1 class="page-title">Booking Records</h1>
+            <div class="card">
+                <div class="card-header">
+                    <i class="fas fa-ticket-alt"></i>
+                    All Bookings
+                    <span class="badge" style="background: #f59e0b; color: white; margin-left: auto;">{{ bookings|length }} Total</span>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Booking ID</th>
+                                    <th>Passenger</th>
+                                    <th>Flight</th>
+                                    <th>Seat</th>
+                                    <th>Status</th>
+                                    <th>Amount</th>
+                                    <th>Date</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for booking in bookings %}
+                                <tr>
+                                    <td><strong style="color: #1e40af;">#{{ booking.id }}</strong></td>
+                                    <td>
+                                        <div><strong>{{ booking.passenger_name }}</strong></div>
+                                        <small style="color: #64748b;">{{ booking.passenger_email }}</small>
+                                    </td>
+                                    <td>
+                                        <div><strong>{{ booking.seat.flight.code }}</strong></div>
+                                        <small style="color: #64748b;">{{ booking.seat.flight.origin }} → {{ booking.seat.flight.destination }}</small>
+                                    </td>
+                                    <td><span class="badge" style="background: #64748b; color: white;">{{ booking.seat.seat_number }}</span></td>
+                                    <td>
+                                        {% if booking.state == 'CONFIRMED' %}
+                                            <span class="badge" style="background: #10b981; color: white;">{{ booking.state }}</span>
+                                        {% elif booking.state == 'CANCELLED' %}
+                                            <span class="badge" style="background: #ef4444; color: white;">{{ booking.state }}</span>
+                                        {% elif booking.state == 'SEAT_HELD' %}
+                                            <span class="badge" style="background: #f59e0b; color: white;">{{ booking.state }}</span>
+                                        {% else %}
+                                            <span class="badge" style="background: #06b6d4; color: white;">{{ booking.state }}</span>
+                                        {% endif %}
+                                    </td>
+                                    <td><strong>₹{{ booking.payment_amount|default:"0"|floatformat:0 }}</strong></td>
+                                    <td>{{ booking.created_at|date:"M d, Y" }}</td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="7" class="text-center" style="padding: 2rem; color: #64748b;">
+                                        <i class="fas fa-ticket-alt fa-2x mb-3"></i>
+                                        <div>No bookings found</div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Add Monitoring User Modal -->
+    <div class="modal fade" id="addMonitoringModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Add Monitoring User</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="addMonitoringForm">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label class="form-label">Username</label>
+                            <input type="text" class="form-control" name="username" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Password</label>
+                            <input type="password" class="form-control" name="password" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">First Name</label>
+                            <input type="text" class="form-control" name="first_name" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Last Name</label>
+                            <input type="text" class="form-control" name="last_name" required>
+                        </div>
+                        <div class="mb-3">
+                            <div class="form-check">
+                                <input type="checkbox" class="form-check-input" name="is_active" checked>
+                                <label class="form-check-label">Active</label>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" onclick="submitAddMonitoring()">Add User</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Admin Modal -->
+    <div class="modal fade" id="editAdminModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Edit Admin User</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="editAdminForm">
+                        {% csrf_token %}
+                        <input type="hidden" name="admin_id" id="editAdminId">
+                        <div class="mb-3">
+                            <label class="form-label">Admin Name</label>
+                            <input type="text" class="form-control" name="admin_name" id="editAdminName" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Email</label>
+                            <input type="email" class="form-control" name="email" id="editAdminEmail" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Phone Number</label>
+                            <input type="text" class="form-control" name="phone_number" id="editAdminPhone">
+                        </div>
+                        <div class="mb-3">
+                            <div class="form-check">
+                                <input type="checkbox" class="form-check-input" name="is_active" id="editAdminActive">
+                                <label class="form-check-label">Active</label>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" onclick="submitEditAdmin()">Update Admin</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Monitoring User Modal -->
+    <div class="modal fade" id="editMonitoringModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Edit Monitoring User</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="editMonitoringForm">
+                        {% csrf_token %}
+                        <input type="hidden" name="monitoring_id" id="editMonitoringId">
+                        <div class="mb-3">
+                            <label class="form-label">Username</label>
+                            <input type="text" class="form-control" name="username" id="editMonitoringUsername" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">First Name</label>
+                            <input type="text" class="form-control" name="first_name" id="editMonitoringFirstName" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Last Name</label>
+                            <input type="text" class="form-control" name="last_name" id="editMonitoringLastName" required>
+                        </div>
+                        <div class="mb-3">
+                            <div class="form-check">
+                                <input type="checkbox" class="form-check-input" name="is_active" id="editMonitoringActive">
+                                <label class="form-check-label">Active</label>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" onclick="submitEditMonitoring()">Update User</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div class="modal fade" id="deleteModal" tabindex="-1">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Confirm Delete</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="text-center">
+                        <i class="fas fa-exclamation-triangle fa-3x text-warning mb-3"></i>
+                        <p>Are you sure you want to delete <strong id="deleteItemName"></strong>?</p>
+                        <p class="text-muted small">This action cannot be undone.</p>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-danger" id="confirmDeleteBtn">Delete</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="editUserModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Edit User</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="editUserForm">
+                        {% csrf_token %}
+                        <input type="hidden" name="user_id" id="editUserId">
+                        <div class="mb-3">
+                            <label class="form-label">Username</label>
+                            <input type="text" class="form-control" name="username" id="editUserUsername" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">First Name</label>
+                            <input type="text" class="form-control" name="first_name" id="editUserFirstName" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Last Name</label>
+                            <input type="text" class="form-control" name="last_name" id="editUserLastName" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Email</label>
+                            <input type="email" class="form-control" name="email" id="editUserEmail">
+                        </div>
+                        <div class="mb-3">
+                            <div class="form-check">
+                                <input type="checkbox" class="form-check-input" name="is_active" id="editUserActive">
+                                <label class="form-check-label">Active</label>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" onclick="submitEditUser()">Update User</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function showSection(sectionName) {
+            // Remove active from all nav items
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            // Add active to clicked nav item
+            event.target.closest('.nav-item').classList.add('active');
+            
+            // Hide all content sections
+            document.querySelectorAll('.content-section').forEach(section => {
+                section.style.display = 'none';
+            });
+            
+            // Show selected section
+            const targetSection = document.getElementById(sectionName + '-section');
+            if (targetSection) {
+                targetSection.style.display = 'block';
+            }
+        }
+        
+        // Add Monitoring User Functions
+        function showAddMonitoringModal() {
+            new bootstrap.Modal(document.getElementById('addMonitoringModal')).show();
+        }
+        
+        function submitAddMonitoring() {
+            const form = document.getElementById('addMonitoringForm');
+            const formData = new FormData(form);
+            
+            fetch('/monitoring/add-user/', {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    bootstrap.Modal.getInstance(document.getElementById('addMonitoringModal')).hide();
+                    location.reload();
+                } else {
+                    alert('Error: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred while adding monitoring user');
+            });
+        }
+        
+        // Edit User Functions
+        function editUser(id, username, firstName, lastName, email, isActive) {
+            document.getElementById('editUserId').value = id;
+            document.getElementById('editUserUsername').value = username;
+            document.getElementById('editUserFirstName').value = firstName;
+            document.getElementById('editUserLastName').value = lastName;
+            document.getElementById('editUserEmail').value = email;
+            document.getElementById('editUserActive').checked = isActive;
+            
+            new bootstrap.Modal(document.getElementById('editUserModal')).show();
+        }
+        
+        function submitEditUser() {
+            const form = document.getElementById('editUserForm');
+            const formData = new FormData(form);
+            const userId = document.getElementById('editUserId').value;
+            
+            fetch(`/monitoring/system-user/${userId}/update/`, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    bootstrap.Modal.getInstance(document.getElementById('editUserModal')).hide();
+                    location.reload();
+                } else {
+                    alert('Error: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred while updating user');
+            });
+        }
+        
+        // Delete User Function
+        function deleteUser(id, username) {
+            showDeleteModal(username, () => {
+                fetch(`/monitoring/system-user/${id}/delete/`, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        bootstrap.Modal.getInstance(document.getElementById('deleteModal')).hide();
+                        location.reload();
+                    } else {
+                        alert('Error: ' + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('An error occurred while deleting user');
+                });
+            });
+        }
+        
+        // Reusable Delete Modal Function
+        function showDeleteModal(itemName, deleteCallback) {
+            document.getElementById('deleteItemName').textContent = itemName;
+            
+            const deleteBtn = document.getElementById('confirmDeleteBtn');
+            deleteBtn.onclick = deleteCallback;
+            
+            new bootstrap.Modal(document.getElementById('deleteModal')).show();
+        }
+        
+        // Admin User Functions
+        function showAddAdminModal() {
+            alert('Add Admin Modal - This feature can be implemented with a proper form modal');
+        }
+        
+        function editAdmin(id, name, email, phone, isActive) {
+            document.getElementById('editAdminId').value = id;
+            document.getElementById('editAdminName').value = name;
+            document.getElementById('editAdminEmail').value = email;
+            document.getElementById('editAdminPhone').value = phone || '';
+            document.getElementById('editAdminActive').checked = isActive;
+            
+            new bootstrap.Modal(document.getElementById('editAdminModal')).show();
+        }
+        
+        function submitEditAdmin() {
+            const form = document.getElementById('editAdminForm');
+            const formData = new FormData(form);
+            const adminId = document.getElementById('editAdminId').value;
+            
+            fetch(`/monitoring/admin-user/${adminId}/update/`, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    bootstrap.Modal.getInstance(document.getElementById('editAdminModal')).hide();
+                    location.reload();
+                } else {
+                    alert('Error: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred while updating admin');
+            });
+        }
+        
+        function deleteAdmin(id, name) {
+            showDeleteModal(name, () => {
+                fetch(`/monitoring/admin-user/${id}/delete/`, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        bootstrap.Modal.getInstance(document.getElementById('deleteModal')).hide();
+                        location.reload();
+                    } else {
+                        alert('Error: ' + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('An error occurred while deleting admin');
+                });
+            });
+        }
+        
+        function updateAdminUser(id, data) {
+            fetch(`/monitoring/admin-user/${id}/update/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: new URLSearchParams(data)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    location.reload();
+                } else {
+                    alert('Error: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred while updating admin');
+            });
+        }
+        
+        // Monitoring User Functions
+        function editMonitoring(id, username, firstName, lastName, isActive) {
+            document.getElementById('editMonitoringId').value = id;
+            document.getElementById('editMonitoringUsername').value = username;
+            document.getElementById('editMonitoringFirstName').value = firstName;
+            document.getElementById('editMonitoringLastName').value = lastName;
+            document.getElementById('editMonitoringActive').checked = isActive;
+            
+            new bootstrap.Modal(document.getElementById('editMonitoringModal')).show();
+        }
+        
+        function submitEditMonitoring() {
+            const form = document.getElementById('editMonitoringForm');
+            const formData = new FormData(form);
+            const monitoringId = document.getElementById('editMonitoringId').value;
+            
+            fetch(`/monitoring/monitoring-user/${monitoringId}/update/`, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    bootstrap.Modal.getInstance(document.getElementById('editMonitoringModal')).hide();
+                    location.reload();
+                } else {
+                    alert('Error: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred while updating monitoring user');
+            });
+        }
+        
+        function deleteMonitoring(id, username) {
+            showDeleteModal(username, () => {
+                fetch(`/monitoring/monitoring-user/${id}/delete/`, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        bootstrap.Modal.getInstance(document.getElementById('deleteModal')).hide();
+                        location.reload();
+                    } else {
+                        alert('Error: ' + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('An error occurred while deleting monitoring user');
+                });
+            });
+        }
+        
+        function updateMonitoringUser(id, data) {
+            fetch(`/monitoring/monitoring-user/${id}/update/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: new URLSearchParams(data)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    location.reload();
+                } else {
+                    alert('Error: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred while updating monitoring user');
+            });
+        }
+    </script>
+</body>
+</html>

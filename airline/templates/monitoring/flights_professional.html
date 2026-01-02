@@ -1,0 +1,121 @@
+{% extends 'monitoring/base_professional.html' %}
+
+{% block title %}Flight Management - Airline Control Center{% endblock %}
+
+{% block content %}
+<h1 class="page-title">Flight Operations</h1>
+
+<div class="card">
+    <div class="card-header">
+        <span><i class="fas fa-plane me-2"></i>All Flights</span>
+        <span class="badge badge-primary">{{ flights|length }} Total</span>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Flight Code</th>
+                        <th>Airline</th>
+                        <th>Route</th>
+                        <th>Departure</th>
+                        <th>Price</th>
+                        <th>Capacity</th>
+                        <th>Booked</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for flight in flights %}
+                    <tr>
+                        <td>
+                            <strong style="color: var(--primary);">{{ flight.code }}</strong>
+                        </td>
+                        <td>
+                            <span class="badge badge-info">{{ flight.airline_code }}</span>
+                        </td>
+                        <td>
+                            <div>
+                                <strong>{{ flight.origin }}</strong> 
+                                <i class="fas fa-arrow-right mx-2 text-muted"></i> 
+                                <strong>{{ flight.destination }}</strong>
+                            </div>
+                        </td>
+                        <td>
+                            <div>{{ flight.departure_time|date:"M d, Y" }}</div>
+                            <small class="text-muted">{{ flight.departure_time|date:"H:i" }}</small>
+                        </td>
+                        <td>
+                            <strong>₹{{ flight.price|floatformat:0 }}</strong>
+                        </td>
+                        <td>
+                            <span class="badge badge-secondary">{{ flight.total_seats }}</span>
+                        </td>
+                        <td>
+                            {% with booked_count=flight.seat_set.all|length %}
+                            <span class="badge {% if booked_count > 0 %}badge-warning{% else %}badge-success{% endif %}">
+                                {{ booked_count }}
+                            </span>
+                            {% endwith %}
+                        </td>
+                        <td>
+                            {% if flight.is_active %}
+                                <span class="badge badge-success">Active</span>
+                            {% else %}
+                                <span class="badge badge-danger">Inactive</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <button class="btn btn-sm btn-outline-primary" 
+                                    onclick="toggleFlightStatus({{ flight.id }}, {{ flight.is_active|yesno:'true,false' }})">
+                                {% if flight.is_active %}
+                                    <i class="fas fa-pause"></i> Deactivate
+                                {% else %}
+                                    <i class="fas fa-play"></i> Activate
+                                {% endif %}
+                            </button>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="9" class="text-center text-muted py-4">
+                            <i class="fas fa-plane fa-2x mb-3"></i>
+                            <div>No flights found</div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function toggleFlightStatus(flightId, currentStatus) {
+    if (confirm('Are you sure you want to ' + (currentStatus ? 'deactivate' : 'activate') + ' this flight?')) {
+        fetch(`/monitoring/toggle-flight/${flightId}/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+                'Content-Type': 'application/json',
+            },
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            } else {
+                alert('Error: ' + data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('An error occurred while updating flight status');
+        });
+    }
+}
+</script>
+{% endblock %}

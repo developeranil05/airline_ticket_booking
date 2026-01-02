@@ -1915,3 +1915,209 @@ INFO 2026-01-02 21:21:50,354 template_views 15120 13424 Flight DN476: 170/170 av
 INFO 2026-01-02 21:21:50,364 template_views 15120 13424 Flight UK976: 170/170 available
 INFO 2026-01-02 21:21:50,375 template_views 15120 13424 Flight 9W516: 170/170 available
 INFO 2026-01-02 21:21:50,404 log 15120 13424 "GET /?origin=Chennai&destination=Delhi&passengers=1 HTTP/1.1" 200 53977
+INFO 2026-01-02 21:27:21,243 log 15120 10384 "GET /api/cities/?field=origin&all=true HTTP/1.1" 200 124
+INFO 2026-01-02 21:27:27,889 template_views 15120 10384 Flight list accessed with params: <QueryDict: {'origin': ['Pune'], 'destination': ['Delhi'], 'passengers': ['1']}>
+INFO 2026-01-02 21:27:28,001 template_views 15120 10384 Total active flights: 34
+INFO 2026-01-02 21:27:28,008 template_views 15120 10384 After origin filter 'Pune': 7
+INFO 2026-01-02 21:27:28,012 template_views 15120 10384 After destination filter 'Delhi': 2
+INFO 2026-01-02 21:27:28,018 template_views 15120 10384 Final flights count: 2
+INFO 2026-01-02 21:27:28,036 template_views 15120 10384 Flight DN947: 170/170 available
+INFO 2026-01-02 21:27:28,041 template_views 15120 10384 Flight G8349: 170/170 available
+INFO 2026-01-02 21:27:28,057 log 15120 10384 "GET /?origin=Pune&destination=Delhi&passengers=1 HTTP/1.1" 200 49847
+INFO 2026-01-02 21:27:39,276 log 15120 5804 "GET /monitoring/dashboard/ HTTP/1.1" 200 27910
+INFO 2026-01-02 21:32:05,968 template_views 15120 12280 Flight list accessed with params: <QueryDict: {}>
+INFO 2026-01-02 21:32:06,071 template_views 15120 12280 Total active flights: 34
+INFO 2026-01-02 21:32:06,078 template_views 15120 12280 Final flights count: 20
+INFO 2026-01-02 21:32:06,089 template_views 15120 12280 Flight IT180: 170/170 available
+INFO 2026-01-02 21:32:06,093 template_views 15120 12280 Flight SG824: 170/170 available
+INFO 2026-01-02 21:32:06,096 template_views 15120 12280 Flight DN947: 170/170 available
+INFO 2026-01-02 21:32:06,101 template_views 15120 12280 Flight 9W435: 170/170 available
+INFO 2026-01-02 21:32:06,105 template_views 15120 12280 Flight DN476: 170/170 available
+INFO 2026-01-02 21:32:06,108 template_views 15120 12280 Flight I5413: 170/170 available
+INFO 2026-01-02 21:32:06,111 template_views 15120 12280 Flight SG129: 170/170 available
+INFO 2026-01-02 21:32:06,114 template_views 15120 12280 Flight 6E418: 170/170 available
+INFO 2026-01-02 21:32:06,117 template_views 15120 12280 Flight 6E663: 170/170 available
+INFO 2026-01-02 21:32:06,120 template_views 15120 12280 Flight 9W642: 170/170 available
+INFO 2026-01-02 21:32:06,123 template_views 15120 12280 Flight I5707: 170/170 available
+INFO 2026-01-02 21:32:06,128 template_views 15120 12280 Flight UK976: 170/170 available
+INFO 2026-01-02 21:32:06,131 template_views 15120 12280 Flight I5766: 170/170 available
+INFO 2026-01-02 21:32:06,134 template_views 15120 12280 Flight IT263: 170/170 available
+INFO 2026-01-02 21:32:06,137 template_views 15120 12280 Flight 9W562: 170/170 available
+INFO 2026-01-02 21:32:06,141 template_views 15120 12280 Flight 9W516: 170/170 available
+INFO 2026-01-02 21:32:06,143 template_views 15120 12280 Flight S2661: 170/170 available
+INFO 2026-01-02 21:32:06,145 template_views 15120 12280 Flight UK585: 170/170 available
+INFO 2026-01-02 21:32:06,148 template_views 15120 12280 Flight G8307: 170/170 available
+INFO 2026-01-02 21:32:06,152 template_views 15120 12280 Flight S2667: 170/170 available
+INFO 2026-01-02 21:32:06,212 log 15120 12280 "GET / HTTP/1.1" 200 124106
+INFO 2026-01-02 21:36:41,184 autoreload 15120 9520 C:\Users\HP\OneDrive\Desktop\Github_Projects\airline_ticket_booking\airline\bookings\monitoring_views.py changed, reloading.
+INFO 2026-01-02 21:36:43,836 autoreload 8992 12992 Watching for file changes with StatReloader
+INFO 2026-01-02 21:38:45,109 autoreload 8992 12992 C:\Users\HP\OneDrive\Desktop\Github_Projects\airline_ticket_booking\airline\bookings\monitoring_views.py changed, reloading.
+INFO 2026-01-02 21:38:46,913 autoreload 12252 9316 Watching for file changes with StatReloader
+INFO 2026-01-02 21:39:36,765 autoreload 12252 9316 C:\Users\HP\OneDrive\Desktop\Github_Projects\airline_ticket_booking\airline\bookings\monitoring_views.py changed, reloading.
+INFO 2026-01-02 21:39:38,296 autoreload 2760 9664 Watching for file changes with StatReloader
+INFO 2026-01-02 21:40:41,310 autoreload 1440 12656 Watching for file changes with StatReloader
+INFO 2026-01-02 21:42:01,782 autoreload 1440 12656 C:\Users\HP\OneDrive\Desktop\Github_Projects\airline_ticket_booking\airline\bookings\monitoring_views.py changed, reloading.
+INFO 2026-01-02 21:42:02,880 autoreload 14580 10488 Watching for file changes with StatReloader
+INFO 2026-01-02 21:44:14,749 template_views 16108 13236 Flight list accessed with params: <QueryDict: {}>
+INFO 2026-01-02 21:44:14,987 template_views 16108 13236 Total active flights: 34
+INFO 2026-01-02 21:44:15,002 template_views 16108 13236 Final flights count: 20
+INFO 2026-01-02 21:44:15,030 template_views 16108 13236 Flight IT180: 170/170 available
+INFO 2026-01-02 21:44:15,037 template_views 16108 13236 Flight SG824: 170/170 available
+INFO 2026-01-02 21:44:15,043 template_views 16108 13236 Flight DN947: 170/170 available
+INFO 2026-01-02 21:44:15,050 template_views 16108 13236 Flight 9W435: 170/170 available
+INFO 2026-01-02 21:44:15,055 template_views 16108 13236 Flight DN476: 170/170 available
+INFO 2026-01-02 21:44:15,062 template_views 16108 13236 Flight I5413: 170/170 available
+INFO 2026-01-02 21:44:15,068 template_views 16108 13236 Flight SG129: 170/170 available
+INFO 2026-01-02 21:44:15,075 template_views 16108 13236 Flight 6E418: 170/170 available
+INFO 2026-01-02 21:44:15,079 template_views 16108 13236 Flight 6E663: 170/170 available
+INFO 2026-01-02 21:44:15,085 template_views 16108 13236 Flight 9W642: 170/170 available
+INFO 2026-01-02 21:44:15,090 template_views 16108 13236 Flight I5707: 170/170 available
+INFO 2026-01-02 21:44:15,097 template_views 16108 13236 Flight UK976: 170/170 available
+INFO 2026-01-02 21:44:15,103 template_views 16108 13236 Flight I5766: 170/170 available
+INFO 2026-01-02 21:44:15,105 template_views 16108 13236 Flight IT263: 170/170 available
+INFO 2026-01-02 21:44:15,112 template_views 16108 13236 Flight 9W562: 170/170 available
+INFO 2026-01-02 21:44:15,118 template_views 16108 13236 Flight 9W516: 170/170 available
+INFO 2026-01-02 21:44:15,124 template_views 16108 13236 Flight S2661: 170/170 available
+INFO 2026-01-02 21:44:15,129 template_views 16108 13236 Flight UK585: 170/170 available
+INFO 2026-01-02 21:44:15,136 template_views 16108 13236 Flight G8307: 170/170 available
+INFO 2026-01-02 21:44:15,142 template_views 16108 13236 Flight S2667: 170/170 available
+INFO 2026-01-02 21:44:15,577 log 16108 13236 "GET / HTTP/1.1" 200 124106
+INFO 2026-01-02 21:44:22,026 log 16108 11440 "GET /monitoring/ HTTP/1.1" 200 4485
+INFO 2026-01-02 21:44:28,642 log 16108 2288 "POST /monitoring/ HTTP/1.1" 302 0
+INFO 2026-01-02 21:44:28,810 log 16108 2288 "GET /monitoring/dashboard/ HTTP/1.1" 200 39736
+INFO 2026-01-02 21:49:26,181 log 16108 3140 "GET /monitoring/dashboard/ HTTP/1.1" 200 39736
+INFO 2026-01-02 21:49:27,391 log 16108 3140 "GET /monitoring/dashboard/ HTTP/1.1" 200 39736
+INFO 2026-01-02 21:49:57,558 log 16108 14316 "GET /monitoring/dashboard/ HTTP/1.1" 200 39736
+INFO 2026-01-02 21:49:58,534 log 16108 14316 "GET /monitoring/dashboard/ HTTP/1.1" 200 39736
+INFO 2026-01-02 21:50:25,748 log 16108 11768 "GET /monitoring/dashboard/ HTTP/1.1" 200 39736
+INFO 2026-01-02 21:51:48,760 autoreload 12420 12864 Watching for file changes with StatReloader
+INFO 2026-01-02 21:51:55,558 log 12420 12108 "GET /monitoring/ HTTP/1.1" 200 4485
+INFO 2026-01-02 21:52:06,013 log 12420 1324 "POST /monitoring/ HTTP/1.1" 302 0
+INFO 2026-01-02 21:52:06,300 log 12420 1324 "GET /monitoring/dashboard/ HTTP/1.1" 200 79954
+INFO 2026-01-02 21:54:33,148 autoreload 11704 2576 Watching for file changes with StatReloader
+INFO 2026-01-02 21:54:46,732 log 11704 8116 "GET /monitoring/dashboard/ HTTP/1.1" 200 79954
+INFO 2026-01-02 21:55:49,932 basehttp 11704 10752 - Broken pipe from ('127.0.0.1', 49965)
+INFO 2026-01-02 21:55:51,284 log 11704 6808 "GET /monitoring/dashboard/ HTTP/1.1" 200 79954
+INFO 2026-01-02 21:58:25,588 autoreload 15736 15972 Watching for file changes with StatReloader
+INFO 2026-01-02 21:58:36,300 template_views 15736 5624 Flight list accessed with params: <QueryDict: {}>
+INFO 2026-01-02 21:58:36,503 template_views 15736 5624 Total active flights: 34
+INFO 2026-01-02 21:58:36,513 template_views 15736 5624 Final flights count: 20
+INFO 2026-01-02 21:58:36,526 template_views 15736 5624 Flight IT180: 170/170 available
+INFO 2026-01-02 21:58:36,531 template_views 15736 5624 Flight SG824: 170/170 available
+INFO 2026-01-02 21:58:36,537 template_views 15736 5624 Flight DN947: 170/170 available
+INFO 2026-01-02 21:58:36,542 template_views 15736 5624 Flight 9W435: 170/170 available
+INFO 2026-01-02 21:58:36,545 template_views 15736 5624 Flight DN476: 170/170 available
+INFO 2026-01-02 21:58:36,547 template_views 15736 5624 Flight I5413: 170/170 available
+INFO 2026-01-02 21:58:36,551 template_views 15736 5624 Flight SG129: 170/170 available
+INFO 2026-01-02 21:58:36,556 template_views 15736 5624 Flight 6E418: 170/170 available
+INFO 2026-01-02 21:58:36,560 template_views 15736 5624 Flight 6E663: 170/170 available
+INFO 2026-01-02 21:58:36,563 template_views 15736 5624 Flight 9W642: 170/170 available
+INFO 2026-01-02 21:58:36,565 template_views 15736 5624 Flight I5707: 170/170 available
+INFO 2026-01-02 21:58:36,572 template_views 15736 5624 Flight UK976: 170/170 available
+INFO 2026-01-02 21:58:36,575 template_views 15736 5624 Flight I5766: 170/170 available
+INFO 2026-01-02 21:58:36,578 template_views 15736 5624 Flight IT263: 170/170 available
+INFO 2026-01-02 21:58:36,580 template_views 15736 5624 Flight 9W562: 170/170 available
+INFO 2026-01-02 21:58:36,587 template_views 15736 5624 Flight 9W516: 170/170 available
+INFO 2026-01-02 21:58:36,590 template_views 15736 5624 Flight S2661: 170/170 available
+INFO 2026-01-02 21:58:36,592 template_views 15736 5624 Flight UK585: 170/170 available
+INFO 2026-01-02 21:58:36,595 template_views 15736 5624 Flight G8307: 170/170 available
+INFO 2026-01-02 21:58:36,600 template_views 15736 5624 Flight S2667: 170/170 available
+INFO 2026-01-02 21:58:36,732 log 15736 5624 "GET / HTTP/1.1" 200 124106
+WARNING 2026-01-02 21:58:38,291 log 15736 5624 Not Found: /favicon.ico
+WARNING 2026-01-02 21:58:38,293 log 15736 5624 "GET /favicon.ico HTTP/1.1" 404 16718
+INFO 2026-01-02 21:58:46,633 log 15736 5624 "GET /monitoring HTTP/1.1" 301 0
+INFO 2026-01-02 21:58:46,807 log 15736 5624 "GET /monitoring/ HTTP/1.1" 200 4485
+INFO 2026-01-02 21:59:00,386 log 15736 5624 "POST /monitoring/ HTTP/1.1" 302 0
+INFO 2026-01-02 21:59:00,556 log 15736 5624 "GET /monitoring/dashboard/ HTTP/1.1" 200 79954
+INFO 2026-01-02 22:03:40,910 autoreload 1944 12420 Watching for file changes with StatReloader
+INFO 2026-01-02 22:03:56,477 log 1944 15420 "GET /monitoring/ HTTP/1.1" 200 4485
+INFO 2026-01-02 22:04:02,905 log 1944 15420 "POST /monitoring/ HTTP/1.1" 302 0
+INFO 2026-01-02 22:04:03,085 log 1944 15420 "GET /monitoring/dashboard/ HTTP/1.1" 200 20417
+INFO 2026-01-02 22:06:10,072 log 1944 15420 "GET /monitoring/dashboard/ HTTP/1.1" 200 67514
+INFO 2026-01-02 22:08:27,807 template_views 1944 15076 Flight list accessed with params: <QueryDict: {}>
+INFO 2026-01-02 22:08:27,927 template_views 1944 15076 Total active flights: 34
+INFO 2026-01-02 22:08:27,931 template_views 1944 15076 Final flights count: 20
+INFO 2026-01-02 22:08:27,947 template_views 1944 15076 Flight IT180: 170/170 available
+INFO 2026-01-02 22:08:27,957 template_views 1944 15076 Flight SG824: 170/170 available
+INFO 2026-01-02 22:08:27,961 template_views 1944 15076 Flight DN947: 170/170 available
+INFO 2026-01-02 22:08:27,966 template_views 1944 15076 Flight 9W435: 170/170 available
+INFO 2026-01-02 22:08:27,975 template_views 1944 15076 Flight DN476: 170/170 available
+INFO 2026-01-02 22:08:27,980 template_views 1944 15076 Flight I5413: 170/170 available
+INFO 2026-01-02 22:08:27,985 template_views 1944 15076 Flight SG129: 170/170 available
+INFO 2026-01-02 22:08:27,990 template_views 1944 15076 Flight 6E418: 170/170 available
+INFO 2026-01-02 22:08:27,996 template_views 1944 15076 Flight 6E663: 170/170 available
+INFO 2026-01-02 22:08:28,001 template_views 1944 15076 Flight 9W642: 170/170 available
+INFO 2026-01-02 22:08:28,006 template_views 1944 15076 Flight I5707: 170/170 available
+INFO 2026-01-02 22:08:28,011 template_views 1944 15076 Flight UK976: 170/170 available
+INFO 2026-01-02 22:08:28,015 template_views 1944 15076 Flight I5766: 170/170 available
+INFO 2026-01-02 22:08:28,020 template_views 1944 15076 Flight IT263: 170/170 available
+INFO 2026-01-02 22:08:28,024 template_views 1944 15076 Flight 9W562: 170/170 available
+INFO 2026-01-02 22:08:28,027 template_views 1944 15076 Flight 9W516: 170/170 available
+INFO 2026-01-02 22:08:28,063 template_views 1944 15076 Flight S2661: 170/170 available
+INFO 2026-01-02 22:08:28,066 template_views 1944 15076 Flight UK585: 170/170 available
+INFO 2026-01-02 22:08:28,072 template_views 1944 15076 Flight G8307: 170/170 available
+INFO 2026-01-02 22:08:28,079 template_views 1944 15076 Flight S2667: 170/170 available
+INFO 2026-01-02 22:08:28,117 log 1944 15076 "GET / HTTP/1.1" 200 124106
+INFO 2026-01-02 22:08:46,970 log 1944 15076 "GET /api/cities/?field=origin&all=true HTTP/1.1" 200 124
+INFO 2026-01-02 22:08:48,043 log 1944 6180 "GET /api/cities/?q=New%20York&field=origin HTTP/1.1" 200 19
+INFO 2026-01-02 22:08:50,135 template_views 1944 6180 Flight list accessed with params: <QueryDict: {'origin': ['New York'], 'passengers': ['1']}>
+INFO 2026-01-02 22:08:50,263 template_views 1944 6180 Total active flights: 34
+INFO 2026-01-02 22:08:50,270 template_views 1944 6180 After origin filter 'New York': 0
+INFO 2026-01-02 22:08:50,273 template_views 1944 6180 Final flights count: 0
+INFO 2026-01-02 22:08:50,297 log 1944 6180 "GET /?origin=New+York&passengers=1 HTTP/1.1" 200 41690
+INFO 2026-01-02 22:08:54,535 log 1944 6180 "GET /api/cities/?field=origin&all=true HTTP/1.1" 200 124
+INFO 2026-01-02 22:09:04,495 template_views 1944 6180 Flight list accessed with params: <QueryDict: {'origin': ['Pune'], 'passengers': ['1']}>
+INFO 2026-01-02 22:09:04,618 template_views 1944 6180 Total active flights: 34
+INFO 2026-01-02 22:09:04,625 template_views 1944 6180 After origin filter 'Pune': 7
+INFO 2026-01-02 22:09:04,629 template_views 1944 6180 Final flights count: 7
+INFO 2026-01-02 22:09:04,652 template_views 1944 6180 Flight DN947: 170/170 available
+INFO 2026-01-02 22:09:04,659 template_views 1944 6180 Flight I5766: 170/170 available
+INFO 2026-01-02 22:09:04,671 template_views 1944 6180 Flight IT263: 170/170 available
+INFO 2026-01-02 22:09:04,676 template_views 1944 6180 Flight UK642: 170/170 available
+INFO 2026-01-02 22:09:04,683 template_views 1944 6180 Flight AI331: 170/170 available
+INFO 2026-01-02 22:09:04,690 template_views 1944 6180 Flight G8349: 170/170 available
+INFO 2026-01-02 22:09:04,705 template_views 1944 6180 Flight SG855: 170/170 available
+INFO 2026-01-02 22:09:04,736 log 1944 6180 "GET /?origin=Pune&passengers=1 HTTP/1.1" 200 70461
+INFO 2026-01-02 22:09:27,195 log 1944 6180 "GET /monitoring/dashboard/ HTTP/1.1" 200 91371
+INFO 2026-01-02 22:10:00,928 log 1944 6180 "POST /monitoring/system-user/2/update/ HTTP/1.1" 200 64
+INFO 2026-01-02 22:10:01,141 log 1944 6180 "GET /monitoring/dashboard/ HTTP/1.1" 200 91389
+INFO 2026-01-02 22:10:39,161 log 1944 6180 "POST /monitoring/system-user/3/delete/ HTTP/1.1" 200 70
+INFO 2026-01-02 22:10:39,403 log 1944 6180 "GET /monitoring/dashboard/ HTTP/1.1" 200 89911
+INFO 2026-01-02 22:11:02,638 log 1944 6180 "POST /monitoring/monitoring-user/11/update/ HTTP/1.1" 200 68
+INFO 2026-01-02 22:11:02,746 log 1944 6180 "GET /monitoring/dashboard/ HTTP/1.1" 302 0
+INFO 2026-01-02 22:11:02,761 log 1944 6180 "GET /monitoring/ HTTP/1.1" 200 4485
+INFO 2026-01-02 22:11:09,251 log 1944 6180 "POST /monitoring/ HTTP/1.1" 200 4489
+INFO 2026-01-02 22:11:15,527 log 1944 6180 "POST /monitoring/ HTTP/1.1" 200 4489
+INFO 2026-01-02 22:11:21,278 log 1944 6180 "POST /monitoring/ HTTP/1.1" 200 4489
+INFO 2026-01-02 22:11:28,069 log 1944 6180 "POST /monitoring/ HTTP/1.1" 200 4489
+INFO 2026-01-02 22:13:06,206 template_views 1944 6180 Flight list accessed with params: <QueryDict: {}>
+INFO 2026-01-02 22:13:06,307 template_views 1944 6180 Total active flights: 34
+INFO 2026-01-02 22:13:06,313 template_views 1944 6180 Final flights count: 20
+INFO 2026-01-02 22:13:06,324 template_views 1944 6180 Flight IT180: 170/170 available
+INFO 2026-01-02 22:13:06,329 template_views 1944 6180 Flight SG824: 170/170 available
+INFO 2026-01-02 22:13:06,335 template_views 1944 6180 Flight DN947: 170/170 available
+INFO 2026-01-02 22:13:06,338 template_views 1944 6180 Flight 9W435: 170/170 available
+INFO 2026-01-02 22:13:06,341 template_views 1944 6180 Flight DN476: 170/170 available
+INFO 2026-01-02 22:13:06,345 template_views 1944 6180 Flight I5413: 170/170 available
+INFO 2026-01-02 22:13:06,347 template_views 1944 6180 Flight SG129: 170/170 available
+INFO 2026-01-02 22:13:06,351 template_views 1944 6180 Flight 6E418: 170/170 available
+INFO 2026-01-02 22:13:06,354 template_views 1944 6180 Flight 6E663: 170/170 available
+INFO 2026-01-02 22:13:06,363 template_views 1944 6180 Flight 9W642: 170/170 available
+INFO 2026-01-02 22:13:06,369 template_views 1944 6180 Flight I5707: 170/170 available
+INFO 2026-01-02 22:13:06,372 template_views 1944 6180 Flight UK976: 170/170 available
+INFO 2026-01-02 22:13:06,375 template_views 1944 6180 Flight I5766: 170/170 available
+INFO 2026-01-02 22:13:06,378 template_views 1944 6180 Flight IT263: 170/170 available
+INFO 2026-01-02 22:13:06,384 template_views 1944 6180 Flight 9W562: 170/170 available
+INFO 2026-01-02 22:13:06,388 template_views 1944 6180 Flight 9W516: 170/170 available
+INFO 2026-01-02 22:13:06,391 template_views 1944 6180 Flight S2661: 170/170 available
+INFO 2026-01-02 22:13:06,394 template_views 1944 6180 Flight UK585: 170/170 available
+INFO 2026-01-02 22:13:06,398 template_views 1944 6180 Flight G8307: 170/170 available
+INFO 2026-01-02 22:13:06,402 template_views 1944 6180 Flight S2667: 170/170 available
+INFO 2026-01-02 22:13:06,416 log 1944 6180 "GET / HTTP/1.1" 200 124106
+INFO 2026-01-02 22:13:16,651 log 1944 6180 "GET /monitoring/ HTTP/1.1" 200 4190
+INFO 2026-01-02 22:13:21,835 log 1944 6180 "POST /monitoring/ HTTP/1.1" 200 4489
+INFO 2026-01-02 22:13:27,453 log 1944 6180 "POST /monitoring/ HTTP/1.1" 200 4489
+INFO 2026-01-02 22:16:10,145 log 1944 15460 "POST /monitoring/ HTTP/1.1" 200 4489
+INFO 2026-01-02 22:16:15,648 log 1944 15460 "POST /monitoring/ HTTP/1.1" 200 4489
+INFO 2026-01-02 22:19:09,566 autoreload 1944 12420 C:\Users\HP\OneDrive\Desktop\Github_Projects\airline_ticket_booking\airline\bookings\models.py changed, reloading.
+INFO 2026-01-02 22:19:11,846 autoreload 10464 12936 Watching for file changes with StatReloader

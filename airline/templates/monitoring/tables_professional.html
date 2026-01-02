@@ -1,0 +1,313 @@
+{% extends 'monitoring/base_professional.html' %}
+
+{% block title %}System Data - Airline Control Center{% endblock %}
+
+{% block extra_css %}
+<style>
+.nav-tabs {
+    border-bottom: 2px solid var(--border);
+    margin-bottom: 2rem;
+}
+
+.nav-tabs .nav-link {
+    border: none;
+    border-bottom: 3px solid transparent;
+    color: var(--text-muted);
+    font-weight: 500;
+    padding: 1rem 1.5rem;
+    transition: all 0.3s ease;
+}
+
+.nav-tabs .nav-link:hover {
+    border-color: var(--primary-light);
+    color: var(--primary);
+}
+
+.nav-tabs .nav-link.active {
+    background: none;
+    border-bottom-color: var(--primary);
+    color: var(--primary);
+    font-weight: 600;
+}
+
+.tab-content {
+    animation: fadeIn 0.3s ease-in;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.data-count {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    margin-left: 0.5rem;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<h1 class="page-title">System Data Overview</h1>
+
+<ul class="nav nav-tabs" id="dataTab" role="tablist">
+    <li class="nav-item" role="presentation">
+        <button class="nav-link active" id="users-tab" data-bs-toggle="tab" data-bs-target="#users" type="button">
+            <i class="fas fa-users me-2"></i>System Users<span class="data-count">({{ users|length }})</span>
+        </button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link" id="monitoring-tab" data-bs-toggle="tab" data-bs-target="#monitoring" type="button">
+            <i class="fas fa-user-shield me-2"></i>Monitoring Users<span class="data-count">({{ monitoring_users|length }})</span>
+        </button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link" id="admin-tab" data-bs-toggle="tab" data-bs-target="#admin" type="button">
+            <i class="fas fa-user-tie me-2"></i>Admin Users<span class="data-count">({{ admin_users_data|length }})</span>
+        </button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link" id="flights-tab" data-bs-toggle="tab" data-bs-target="#flights" type="button">
+            <i class="fas fa-plane me-2"></i>Flights<span class="data-count">({{ flights|length }})</span>
+        </button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link" id="bookings-tab" data-bs-toggle="tab" data-bs-target="#bookings" type="button">
+            <i class="fas fa-ticket-alt me-2"></i>Bookings<span class="data-count">({{ bookings|length }})</span>
+        </button>
+    </li>
+</ul>
+
+<div class="tab-content" id="dataTabContent">
+    <!-- System Users Tab -->
+    <div class="tab-pane fade show active" id="users" role="tabpanel">
+        <div class="card">
+            <div class="card-header">
+                <span><i class="fas fa-users me-2"></i>System Users</span>
+                <span class="badge badge-primary">{{ users|length }} Total</span>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Username</th>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Status</th>
+                                <th>Joined</th>
+                                <th>Last Login</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for user in users %}
+                            <tr>
+                                <td><strong>{{ user.id }}</strong></td>
+                                <td><strong style="color: var(--primary);">{{ user.username }}</strong></td>
+                                <td>{{ user.first_name }} {{ user.last_name }}</td>
+                                <td>{{ user.email|default:"-" }}</td>
+                                <td>
+                                    {% if user.is_active %}
+                                        <span class="badge badge-success">Active</span>
+                                    {% else %}
+                                        <span class="badge badge-danger">Inactive</span>
+                                    {% endif %}
+                                </td>
+                                <td>{{ user.date_joined|date:"M d, Y H:i" }}</td>
+                                <td>{{ user.last_login|date:"M d, Y H:i"|default:"Never" }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Monitoring Users Tab -->
+    <div class="tab-pane fade" id="monitoring" role="tabpanel">
+        <div class="card">
+            <div class="card-header">
+                <span><i class="fas fa-user-shield me-2"></i>Monitoring Users</span>
+                <span class="badge badge-info">{{ monitoring_users|length }} Total</span>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Username</th>
+                                <th>Name</th>
+                                <th>Status</th>
+                                <th>Created</th>
+                                <th>Last Login</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for user in monitoring_users %}
+                            <tr>
+                                <td><strong>{{ user.id }}</strong></td>
+                                <td><strong style="color: var(--primary);">{{ user.username }}</strong></td>
+                                <td>{{ user.first_name }} {{ user.last_name }}</td>
+                                <td>
+                                    {% if user.is_active %}
+                                        <span class="badge badge-success">Active</span>
+                                    {% else %}
+                                        <span class="badge badge-danger">Inactive</span>
+                                    {% endif %}
+                                </td>
+                                <td>{{ user.created_date|date:"M d, Y H:i" }}</td>
+                                <td>{{ user.last_login|date:"M d, Y H:i"|default:"Never" }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Admin Users Tab -->
+    <div class="tab-pane fade" id="admin" role="tabpanel">
+        <div class="card">
+            <div class="card-header">
+                <span><i class="fas fa-user-tie me-2"></i>Admin Users</span>
+                <span class="badge badge-warning">{{ admin_users_data|length }} Total</span>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Admin Name</th>
+                                <th>Airline Code</th>
+                                <th>Email</th>
+                                <th>Phone</th>
+                                <th>Flights</th>
+                                <th>Created</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for data in admin_users_data %}
+                            <tr>
+                                <td><strong>{{ data.admin.id }}</strong></td>
+                                <td><strong style="color: var(--primary);">{{ data.admin.admin_name }}</strong></td>
+                                <td><span class="badge badge-info">{{ data.admin.airline_code }}</span></td>
+                                <td>{{ data.admin.email }}</td>
+                                <td>{{ data.admin.phone_number|default:"-" }}</td>
+                                <td><span class="badge badge-secondary">{{ data.flight_count }}</span></td>
+                                <td>{{ data.admin.created_date|date:"M d, Y H:i" }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Flights Tab -->
+    <div class="tab-pane fade" id="flights" role="tabpanel">
+        <div class="card">
+            <div class="card-header">
+                <span><i class="fas fa-plane me-2"></i>All Flights</span>
+                <span class="badge badge-success">{{ flights|length }} Total</span>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Flight Code</th>
+                                <th>Airline</th>
+                                <th>Route</th>
+                                <th>Departure</th>
+                                <th>Price</th>
+                                <th>Seats</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for flight in flights %}
+                            <tr>
+                                <td><strong>{{ flight.id }}</strong></td>
+                                <td><strong style="color: var(--primary);">{{ flight.code }}</strong></td>
+                                <td><span class="badge badge-info">{{ flight.airline_code }}</span></td>
+                                <td>{{ flight.origin }} → {{ flight.destination }}</td>
+                                <td>{{ flight.departure_time|date:"M d, Y H:i" }}</td>
+                                <td><strong>₹{{ flight.price|floatformat:0 }}</strong></td>
+                                <td><span class="badge badge-secondary">{{ flight.total_seats }}</span></td>
+                                <td>
+                                    {% if flight.is_active %}
+                                        <span class="badge badge-success">Active</span>
+                                    {% else %}
+                                        <span class="badge badge-danger">Inactive</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bookings Tab -->
+    <div class="tab-pane fade" id="bookings" role="tabpanel">
+        <div class="card">
+            <div class="card-header">
+                <span><i class="fas fa-ticket-alt me-2"></i>All Bookings</span>
+                <span class="badge badge-warning">{{ bookings|length }} Total</span>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Passenger</th>
+                                <th>Flight</th>
+                                <th>Seat</th>
+                                <th>Status</th>
+                                <th>Amount</th>
+                                <th>Created</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for booking in bookings %}
+                            <tr>
+                                <td><strong>{{ booking.id }}</strong></td>
+                                <td>
+                                    <div><strong>{{ booking.passenger_name }}</strong></div>
+                                    <small class="text-muted">{{ booking.passenger_email }}</small>
+                                </td>
+                                <td><strong style="color: var(--primary);">{{ booking.seat.flight.code }}</strong></td>
+                                <td><span class="badge badge-secondary">{{ booking.seat.seat_number }}</span></td>
+                                <td>
+                                    {% if booking.state == 'CONFIRMED' %}
+                                        <span class="badge badge-success">{{ booking.state }}</span>
+                                    {% elif booking.state == 'CANCELLED' %}
+                                        <span class="badge badge-danger">{{ booking.state }}</span>
+                                    {% elif booking.state == 'SEAT_HELD' %}
+                                        <span class="badge badge-warning">{{ booking.state }}</span>
+                                    {% else %}
+                                        <span class="badge badge-info">{{ booking.state }}</span>
+                                    {% endif %}
+                                </td>
+                                <td><strong>₹{{ booking.payment_amount|default:"0"|floatformat:0 }}</strong></td>
+                                <td>{{ booking.created_at|date:"M d, Y H:i" }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
