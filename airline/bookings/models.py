@@ -2,6 +2,7 @@ from django.db import models
 from django.utils import timezone
 from django.contrib.auth.models import User
 from django.core.validators import MinValueValidator, MaxValueValidator
+from django.contrib.auth.hashers import make_password, check_password
 import uuid
 
 class BookingState(models.TextChoices):
@@ -16,6 +17,7 @@ class BookingState(models.TextChoices):
 
 class Flight(models.Model):
     code = models.CharField(max_length=10, unique=True, db_index=True)
+    airline_code = models.CharField(max_length=2, default='AI', db_index=True)
     departure_time = models.DateTimeField()
     arrival_time = models.DateTimeField()
     origin = models.CharField(max_length=100, db_index=True)
@@ -192,3 +194,73 @@ class Booking(models.Model):
 
     def __str__(self):
         return f"Booking {self.booking_reference} - {self.state}"
+
+
+class MonitoringUser(models.Model):
+    username = models.CharField(max_length=150, unique=True, db_index=True)
+    password = models.CharField(max_length=128)
+    first_name = models.CharField(max_length=30)
+    last_name = models.CharField(max_length=30)
+    is_active = models.BooleanField(default=True, db_index=True)
+    last_login = models.DateTimeField(null=True, blank=True)
+    created_date = models.DateTimeField(auto_now_add=True)
+    
+    class Meta:
+        db_table = 'monitoring_users'
+        ordering = ['username']
+    
+    def set_password(self, raw_password):
+        self.password = make_password(raw_password)
+    
+    def check_password(self, raw_password):
+        return check_password(raw_password, self.password)
+    
+    def update_last_login(self):
+        self.last_login = timezone.now()
+        self.save(update_fields=['last_login'])
+    
+    def __str__(self):
+        return self.username
+
+
+class AdminUser(models.Model):
+    AIRLINE_CHOICES = [
+        ('AI', 'Air India'),
+        ('SG', 'SpiceJet'),
+        ('6E', 'IndiGo'),
+        ('UK', 'Vistara'),
+        ('G8', 'GoAir'),
+        ('I5', 'AirAsia India'),
+        ('9W', 'Jet Airways'),
+        ('DN', 'Alliance Air'),
+        ('S2', 'JetLite'),
+        ('IT', 'Kingfisher'),
+    ]
+    
+    admin_name = models.CharField(max_length=100, default='Admin')
+    airline_code = models.CharField(max_length=2, choices=AIRLINE_CHOICES, db_index=True)
+    airline_name = models.CharField(max_length=100, default='Unknown')
+    email = models.EmailField(default='admin@airline.com')
+    phone_number = models.CharField(max_length=15, default='+91-9876543210')
+    password = models.CharField(max_length=128)
+    actual_password = models.CharField(max_length=50, default='admin123')  # Store actual password for monitoring
+    is_active = models.BooleanField(default=True, db_index=True)
+    last_login = models.DateTimeField(null=True, blank=True)
+    created_date = models.DateTimeField(auto_now_add=True)
+    
+    class Meta:
+        db_table = 'admin_users'
+        ordering = ['airline_code', 'admin_name']
+    
+    def set_password(self, raw_password):
+        self.password = make_password(raw_password)
+    
+    def check_password(self, raw_password):
+        return check_password(raw_password, self.password)
+    
+    def update_last_login(self):
+        self.last_login = timezone.now()
+        self.save(update_fields=['last_login'])
+    
+    def __str__(self):
+        return f"{self.airline_code} - {self.admin_name}"

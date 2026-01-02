@@ -1,0 +1,232 @@
+{% extends 'monitoring/base_new.html' %}
+
+{% block content %}
+<!-- Dashboard Section -->
+<div id="dashboard-section" class="content-section active">
+    <h1 class="mb-4">Dashboard Overview</h1>
+    
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-value">{{ stats.total_users }}</div>
+            <div class="stat-label">Total Users</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value">{{ stats.total_flights }}</div>
+            <div class="stat-label">Total Flights</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value">{{ stats.total_bookings }}</div>
+            <div class="stat-label">Total Bookings</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value">{{ stats.confirmed_bookings }}</div>
+            <div class="stat-label">Confirmed Bookings</div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">Recent Activity</div>
+                <div class="card-body">
+                    <div class="mb-2">
+                        <i class="fas fa-plane text-success me-2"></i>
+                        {{ recent_flights|length }} new flights added
+                    </div>
+                    <div class="mb-2">
+                        <i class="fas fa-ticket-alt text-info me-2"></i>
+                        {{ recent_bookings|length }} bookings processed
+                    </div>
+                    <div class="mb-2">
+                        <i class="fas fa-users text-warning me-2"></i>
+                        {{ monitoring_users|length }} monitoring users active
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">System Status</div>
+                <div class="card-body">
+                    <div class="mb-2">
+                        <span class="badge badge-success">System Online</span>
+                    </div>
+                    <div class="mb-2">
+                        <span class="badge badge-info">Database Connected</span>
+                    </div>
+                    <div class="mb-2">
+                        <span class="badge badge-success">All Services Running</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Users Section -->
+<div id="users-section" class="content-section">
+    <div class="card">
+        <div class="card-header">System Users</div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Username</th>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Status</th>
+                            <th>Joined</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for user in users %}
+                        <tr>
+                            <td><strong>{{ user.username }}</strong></td>
+                            <td>{{ user.first_name }} {{ user.last_name }}</td>
+                            <td>{{ user.email }}</td>
+                            <td>
+                                {% if user.is_active %}
+                                    <span class="badge badge-success">Active</span>
+                                {% else %}
+                                    <span class="badge badge-danger">Inactive</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ user.date_joined|date:"M d, Y" }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Monitoring Users Section -->
+<div id="monitoring-section" class="content-section">
+    <div class="card">
+        <div class="card-header">Monitoring Users</div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Username</th>
+                            <th>Name</th>
+                            <th>Status</th>
+                            <th>Last Login</th>
+                            <th>Created</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for user in monitoring_users %}
+                        <tr>
+                            <td><strong>{{ user.username }}</strong></td>
+                            <td>{{ user.first_name }} {{ user.last_name }}</td>
+                            <td>
+                                {% if user.is_active %}
+                                    <span class="badge badge-success">Active</span>
+                                {% else %}
+                                    <span class="badge badge-danger">Inactive</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ user.last_login|date:"M d, Y"|default:"Never" }}</td>
+                            <td>{{ user.created_date|date:"M d, Y" }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Flights Section -->
+<div id="flights-section" class="content-section">
+    <div class="card">
+        <div class="card-header">Flight Operations</div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Flight Code</th>
+                            <th>Route</th>
+                            <th>Departure</th>
+                            <th>Price</th>
+                            <th>Seats</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for flight in flights %}
+                        <tr>
+                            <td><strong>{{ flight.code }}</strong></td>
+                            <td>{{ flight.origin }} → {{ flight.destination }}</td>
+                            <td>{{ flight.departure_time|date:"M d, H:i" }}</td>
+                            <td>₹{{ flight.price }}</td>
+                            <td>{{ flight.total_seats }}</td>
+                            <td>
+                                {% if flight.is_active %}
+                                    <span class="badge badge-success">Active</span>
+                                {% else %}
+                                    <span class="badge badge-danger">Inactive</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Bookings Section -->
+<div id="bookings-section" class="content-section">
+    <div class="card">
+        <div class="card-header">Booking Records</div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Passenger</th>
+                            <th>Flight</th>
+                            <th>Seat</th>
+                            <th>State</th>
+                            <th>Amount</th>
+                            <th>Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for booking in bookings %}
+                        <tr>
+                            <td>
+                                <div><strong>{{ booking.passenger_name }}</strong></div>
+                                <small class="text-muted">{{ booking.passenger_email }}</small>
+                            </td>
+                            <td><strong>{{ booking.seat.flight.code }}</strong></td>
+                            <td><strong>{{ booking.seat.seat_number }}</strong></td>
+                            <td>
+                                {% if booking.state == 'CONFIRMED' %}
+                                    <span class="badge badge-success">{{ booking.state }}</span>
+                                {% elif booking.state == 'CANCELLED' %}
+                                    <span class="badge badge-danger">{{ booking.state }}</span>
+                                {% elif booking.state == 'SEAT_HELD' %}
+                                    <span class="badge badge-warning">{{ booking.state }}</span>
+                                {% else %}
+                                    <span class="badge badge-info">{{ booking.state }}</span>
+                                {% endif %}
+                            </td>
+                            <td>₹{{ booking.payment_amount|default:"0" }}</td>
+                            <td>{{ booking.created_at|date:"M d, Y" }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
